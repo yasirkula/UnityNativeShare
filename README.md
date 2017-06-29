@@ -1,4 +1,4 @@
-# UnityNativeShare
+# Unity Native Share Plugin
 This plugin helps you natively share your images and/or videos on Android & iOS. A **ContentProvider** is used to share the media on Android. You can set the plugin up in a few easy steps:
 
 - Import **NativeShare.unitypackage** to your project
