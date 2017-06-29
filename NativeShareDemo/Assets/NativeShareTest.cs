@@ -22,6 +22,6 @@ public class NativeShareTest : MonoBehaviour
 		string filePath = Path.Combine( Application.persistentDataPath, "shared img.png" );
         File.WriteAllBytes( filePath, ss.EncodeToPNG() );
 
-		NativeShare.Share( filePath, true, "Mi.ShareIt" );
+		NativeShare.Share( filePath, true, "nativeshare.test" );
     }
 }
