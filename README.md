@@ -1,7 +1,5 @@
 # Unity Native Share Plugin
-This plugin helps you natively share images, videos and/or plain text on Android & iOS. A **ContentProvider** is used to share the media on Android. 
-
-**NOTE:** With the latest release, it is possible to add subject and/or message to the shared image/video (or share plain text only, if desired). However, this release **is not** tested on iOS and only briefly tested on Android. The previous stable version is available here: https://github.com/yasirkula/UnityNativeShare/tree/6b6d5fbe970b64b734dc6886b45bf92e9b639043
+This plugin helps you natively share files (images, videos, documents, etc.) and/or plain text on Android & iOS. A **ContentProvider** is used to share the media on Android. 
 
 You can set the plugin up in a few easy steps:
 
@@ -9,6 +7,8 @@ You can set the plugin up in a few easy steps:
 - *for iOS*: enter a **Photo Library Usage Description** in Xcode
 
 ![PhotoLibraryUsageDescription](iOSPhotoLibraryPermission.png)
+
+- *for iOS*: also enter a **Photo Library Additions Usage Description**, if exists (see: https://github.com/yasirkula/UnityNativeGallery/issues/3)
 
 - *for Android*: using a ContentProvider requires a small modification in AndroidManifest. If your project does not have an **AndroidManifest.xml** file located at **Assets/Plugins/Android**, you should copy Unity's default AndroidManifest.xml from *C:\Program Files\Unity\Editor\Data\PlaybackEngines\AndroidPlayer* (it might be located in a subfolder, like '*Apk*') to *Assets/Plugins/Android* ([credit](http://answers.unity3d.com/questions/536095/how-to-write-an-androidmanifestxml-combining-diffe.html)).
 
@@ -24,16 +24,22 @@ You can set the plugin up in a few easy steps:
 
 - Here, you should change **MY_UNIQUE_AUTHORITY** with a **unique string**. That is important because two apps with the same **android:authorities** string in their `<provider>` tag can't be installed on the same device. Just make it something unique, like your bundle identifier, if you like.
 
+## Upgrading From Previous Versions
+Delete *Plugins/NativeShare.cs*, *Plugins/Android/NativeShare.jar* and *Plugins/iOS/NativeShare.mm* before upgrading the plugin.
+
 ## How To
-Simply call `NativeShare.Share( string mediaPath, string subject, string message, bool isMediaImage, string authority = null )` to share an image/video and/or plain text. You can pass *null* to mediaPath or subject/message to ignore them. 
-- **mediaPath:** the path of the image/video file to share (optional). The file must be stored on the disk before calling this function (though, you can store it in a temporary location, if you prefer, such as **Application.temporaryCachePath**)
-- **subject:** the subject of the shared content (optional). Some apps do not support *subject* natively, including Facebook
-- **message:** the default text of the shared content (optional). Some apps do not support *message* natively, including Facebook
-- **isMediaImage:** should be true while sharing images and false while sharing videos
-- **authority:** should be the same string that you replaced *MY_UNIQUE_AUTHORITY* with (this parameter has no effect on iOS)
+Simply create a new **NativeShare** object and customize it by chaining the following functions as you like (see example code):
+
+- `SetSubject( string subject )`: sets the subject (primarily used in e-mail applications)
+- `SetText( string text )`: sets the shared text. Note that the Facebook app will omit text, if exists (see [this topic](https://stackoverflow.com/a/35102802/2373034))
+- `AddFile( string filePath, string mime = null )`: adds the file at path to the share action. You can add multiple files of different types. The MIME of the file is automatically determined if left null; however, if the file doesn't have an extension and/or you already know the MIME of the file, you can enter the MIME manually. MIME has no effect on iOS
+- `SetTitle( string title )`: sets the title of the share dialog on Android platform. Has no effect on iOS
+- `SetAuthority( string authority )`: must be called on Android platform with the same string that you replaced *MY_UNIQUE_AUTHORITY* with. Has no effect on iOS
+
+Finally, calling the **Share()** function of the NativeShare object will do the trick!
 
 ## Example Code
-The following code captures the screenshot of the game whenever you tap the screen, saves it in a temporary path and then shares the image:
+The following code captures the screenshot of the game whenever you tap the screen, saves it in a temporary path and then shares it:
 
 ```csharp
 void Update()
@@ -53,6 +59,9 @@ private IEnumerator TakeSSAndShare()
 	string filePath = Path.Combine( Application.temporaryCachePath, "shared img.png" );
 	File.WriteAllBytes( filePath, ss.EncodeToPNG() );
 
-	NativeShare.Share( filePath, "Subject goes here", "Message goes here", true, "nativeshare.test" );
+	new NativeShare().AddFile( filePath ).SetSubject( "Subject goes here" ).SetText( "Hello world!" ).SetAuthority( "nativeshare.test" ).Share();
 }
 ```
+
+## Known Limitations
+- Gif files are shared as static images on iOS
