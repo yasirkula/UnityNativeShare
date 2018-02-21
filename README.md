@@ -34,7 +34,6 @@ Simply create a new **NativeShare** object and customize it by chaining the foll
 - `SetText( string text )`: sets the shared text. Note that the Facebook app will omit text, if exists (see [this topic](https://stackoverflow.com/a/35102802/2373034))
 - `AddFile( string filePath, string mime = null )`: adds the file at path to the share action. You can add multiple files of different types. The MIME of the file is automatically determined if left null; however, if the file doesn't have an extension and/or you already know the MIME of the file, you can enter the MIME manually. MIME has no effect on iOS
 - `SetTitle( string title )`: sets the title of the share dialog on Android platform. Has no effect on iOS
-- `SetAuthority( string authority )`: must be called on Android platform with the same string that you replaced *MY_UNIQUE_AUTHORITY* with. Has no effect on iOS
 
 Finally, calling the **Share()** function of the NativeShare object will do the trick!
 
@@ -59,7 +58,7 @@ private IEnumerator TakeSSAndShare()
 	string filePath = Path.Combine( Application.temporaryCachePath, "shared img.png" );
 	File.WriteAllBytes( filePath, ss.EncodeToPNG() );
 
-	new NativeShare().AddFile( filePath ).SetSubject( "Subject goes here" ).SetText( "Hello world!" ).SetAuthority( "nativeshare.test" ).Share();
+	new NativeShare().AddFile( filePath ).SetSubject( "Subject goes here" ).SetText( "Hello world!" ).Share();
 }
 ```
 

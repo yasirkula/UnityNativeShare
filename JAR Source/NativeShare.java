@@ -2,7 +2,11 @@ package com.yasirkula.unity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ProviderInfo;
 import android.net.Uri;
+import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import java.io.File;
@@ -15,8 +19,41 @@ import java.util.Locale;
 
 public class NativeShare
 {
-	public static void Share( Context context, String[] files, String[] mimes, String subject, String text, String title, String authority )
+	private static String authority = null;
+
+	public static void Share( Context context, String[] files, String[] mimes, String subject, String text, String title )
 	{
+		if( files.length > 0 && authority == null )
+		{
+			// Find the authority of ContentProvider first
+			// Credit: https://stackoverflow.com/a/2001769/2373034
+			for( PackageInfo pack : context.getPackageManager().getInstalledPackages( PackageManager.GET_PROVIDERS ) )
+			{
+				if( pack.packageName.equals( context.getPackageName() ) )
+				{
+					ProviderInfo[] providers = pack.providers;
+					if( providers != null )
+					{
+						for( ProviderInfo provider : providers )
+						{
+							if( provider.name.equals( UnitySSContentProvider.class.getName() ) && provider.packageName.equals( context.getPackageName() )
+									&& provider.authority.length() > 0 )
+							{
+								authority = provider.authority;
+								break;
+							}
+						}
+					}
+				}
+			}
+
+			if( authority == null )
+			{
+				Log.e( "Unity", "Can't file ContentProvider, share not possible!" );
+				return;
+			}
+		}
+
 		Intent intent = new Intent();
 
 		if( subject.length() > 0 )

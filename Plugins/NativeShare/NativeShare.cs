@@ -42,7 +42,6 @@ public class NativeShare
 	private string subject;
 	private string text;
 	private string title;
-	private string authority;
 
 	private List<string> files;
 	private List<string> mimes;
@@ -52,7 +51,6 @@ public class NativeShare
 		subject = string.Empty;
 		text = string.Empty;
 		title = string.Empty;
-		authority = null;
 
 		files = new List<string>( 0 );
 		mimes = new List<string>( 0 );
@@ -82,14 +80,6 @@ public class NativeShare
 		return this;
 	}
 
-	public NativeShare SetAuthority( string authority )
-	{
-		if( authority != null )
-			this.authority = authority;
-
-		return this;
-	}
-
 	public NativeShare AddFile( string filePath, string mime = null )
 	{
 		if( !string.IsNullOrEmpty( filePath ) && File.Exists( filePath ) )
@@ -114,10 +104,7 @@ public class NativeShare
 #if UNITY_EDITOR
 		Debug.Log( "Shared!" );
 #elif UNITY_ANDROID
-		if( string.IsNullOrEmpty( authority ) )
-			throw new System.ArgumentException( "Share Error: 'authority' is null or empty!" );
-		
-		AJC.CallStatic( "Share", Context, files.ToArray(), mimes.ToArray(), subject, text, title, authority );
+		AJC.CallStatic( "Share", Context, files.ToArray(), mimes.ToArray(), subject, text, title );
 #elif UNITY_IOS
 		_Share( files.ToArray(), files.Count, subject, text );
 #else
