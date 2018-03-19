@@ -9,15 +9,8 @@ This plugin helps you natively share files (images, videos, documents, etc.) and
 You can set the plugin up in a few easy steps:
 
 - Import **NativeShare.unitypackage** to your project
-- *for iOS*: enter a **Photo Library Usage Description** in Xcode
-
-![PhotoLibraryUsageDescription](iOSPhotoLibraryPermission.png)
-
-- *for iOS*: also enter a **Photo Library Additions Usage Description**, if exists (see: https://github.com/yasirkula/UnityNativeGallery/issues/3)
-
-- *for Android*: using a ContentProvider requires a small modification in AndroidManifest. If your project does not have an **AndroidManifest.xml** file located at **Assets/Plugins/Android**, you should copy Unity's default AndroidManifest.xml from *C:\Program Files\Unity\Editor\Data\PlaybackEngines\AndroidPlayer* (it might be located in a subfolder, like '*Apk*') to *Assets/Plugins/Android* ([credit](http://answers.unity3d.com/questions/536095/how-to-write-an-androidmanifestxml-combining-diffe.html)).
-
-- Inside the `<application>...</application>` tag of your AndroidManifest, insert the following code snippet:
+- *for Android*: using a ContentProvider requires a small modification in AndroidManifest. If your project does not have an **AndroidManifest.xml** file located at **Assets/Plugins/Android**, you should copy Unity's default AndroidManifest.xml from *C:\Program Files\Unity\Editor\Data\PlaybackEngines\AndroidPlayer* (it might be located in a subfolder, like '*Apk*') to *Assets/Plugins/Android* ([credit](http://answers.unity3d.com/questions/536095/how-to-write-an-androidmanifestxml-combining-diffe.html))
+- *for Android*: inside the `<application>...</application>` tag of your AndroidManifest, insert the following code snippet:
 
 ```xml
 <provider
@@ -27,7 +20,21 @@ You can set the plugin up in a few easy steps:
   android:grantUriPermissions="true" />
 ```
 
-- Here, you should change **MY_UNIQUE_AUTHORITY** with a **unique string**. That is important because two apps with the same **android:authorities** string in their `<provider>` tag can't be installed on the same device. Just make it something unique, like your bundle identifier, if you like.
+Here, you should change **MY_UNIQUE_AUTHORITY** with a **unique string**. That is important because two apps with the same **android:authorities** string in their `<provider>` tag can't be installed on the same device. Just make it something unique, like your bundle identifier, if you like.
+
+- *for iOS*: there are two ways to set up the plugin on iOS:
+
+#### a. Automated Setup for iOS
+- change the value of **PHOTO_LIBRARY_USAGE_DESCRIPTION** in *Plugins/NativeShare/Editor/NSPostProcessBuild.cs* (optional)
+
+#### b. Manual Setup for iOS
+- set the value of **ENABLED** to *false* in *NSPostProcessBuild.cs*
+- build your project
+- enter a **Photo Library Usage Description** in Xcode (in case user decides to save the shared media to Photos)
+
+![PhotoLibraryUsageDescription](iOSPhotoLibraryPermission.png)
+
+- also enter a **Photo Library Additions Usage Description**, if exists (see: https://github.com/yasirkula/UnityNativeGallery/issues/3)
 
 ## Upgrading From Previous Versions
 Delete *Plugins/NativeShare.cs*, *Plugins/Android/NativeShare.jar* and *Plugins/iOS/NativeShare.mm* before upgrading the plugin.
