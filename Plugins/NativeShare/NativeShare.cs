@@ -36,12 +36,15 @@ public class NativeShare
 	}
 #elif !UNITY_EDITOR && UNITY_IOS
 	[System.Runtime.InteropServices.DllImport( "__Internal" )]
-	private static extern void _Share( string[] files, int filesCount, string subject, string text );
+	private static extern void _NativeShare_Share( string[] files, int filesCount, string subject, string text );
 #endif
 
 	private string subject;
 	private string text;
 	private string title;
+
+	private string targetPackage;
+	private string targetClass;
 
 	private List<string> files;
 	private List<string> mimes;
@@ -51,6 +54,9 @@ public class NativeShare
 		subject = string.Empty;
 		text = string.Empty;
 		title = string.Empty;
+
+		targetPackage = string.Empty;
+		targetClass = string.Empty;
 
 		files = new List<string>( 0 );
 		mimes = new List<string>( 0 );
@@ -80,6 +86,19 @@ public class NativeShare
 		return this;
 	}
 
+	public NativeShare SetTarget( string androidPackageName, string androidClassName = null )
+	{
+		if( !string.IsNullOrEmpty( androidPackageName ) )
+		{
+			targetPackage = androidPackageName;
+
+			if( androidClassName != null )
+				targetClass = androidClassName;
+		}
+
+		return this;
+	}
+
 	public NativeShare AddFile( string filePath, string mime = null )
 	{
 		if( !string.IsNullOrEmpty( filePath ) && File.Exists( filePath ) )
@@ -104,12 +123,58 @@ public class NativeShare
 #if UNITY_EDITOR
 		Debug.Log( "Shared!" );
 #elif UNITY_ANDROID
-		AJC.CallStatic( "Share", Context, files.ToArray(), mimes.ToArray(), subject, text, title );
+		AJC.CallStatic( "Share", Context, targetPackage, targetClass, files.ToArray(), mimes.ToArray(), subject, text, title );
 #elif UNITY_IOS
-		_Share( files.ToArray(), files.Count, subject, text );
+		_NativeShare_Share( files.ToArray(), files.Count, subject, text );
 #else
 		Debug.Log( "No sharing set up for this platform." );
 #endif
 	}
+
+	#region Utility Functions
+	public static bool TargetExists( string androidPackageName, string androidClassName = null )
+	{
+#if !UNITY_EDITOR && UNITY_ANDROID
+		if( string.IsNullOrEmpty( androidPackageName ) )
+			return false;
+
+		if( androidClassName == null )
+			androidClassName = string.Empty;
+
+		return AJC.CallStatic<bool>( "TargetExists", Context, androidPackageName, androidClassName );
+#else
+		return true;
+#endif
+	}
+
+	public static bool FindTarget( out string androidPackageName, out string androidClassName, string packageNameRegex, string classNameRegex = null )
+	{
+		androidPackageName = null;
+		androidClassName = null;
+
+#if !UNITY_EDITOR && UNITY_ANDROID
+		if( string.IsNullOrEmpty( packageNameRegex ) )
+			return false;
+
+		if( classNameRegex == null )
+			classNameRegex = string.Empty;
+
+		string result = AJC.CallStatic<string>( "FindMatchingTarget", Context, packageNameRegex, classNameRegex );
+		if( string.IsNullOrEmpty( result ) )
+			return false;
+
+		int splitIndex = result.IndexOf( '>' );
+		if( splitIndex <= 0 || splitIndex >= result.Length - 1 )
+			return false;
+
+		androidPackageName = result.Substring( 0, splitIndex );
+		androidClassName = result.Substring( splitIndex + 1 );
+
+		return true;
+#else
+		return false;
+#endif
+	}
+	#endregion
 }
 #pragma warning restore 0414

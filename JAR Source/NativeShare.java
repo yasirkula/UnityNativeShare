@@ -2,6 +2,7 @@ package com.yasirkula.unity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
@@ -11,7 +12,9 @@ import android.webkit.MimeTypeMap;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 /**
  * Created by yasirkula on 22.06.2017.
@@ -21,37 +24,12 @@ public class NativeShare
 {
 	private static String authority = null;
 
-	public static void Share( Context context, String[] files, String[] mimes, String subject, String text, String title )
+	public static void Share( Context context, String targetPackage, String targetClass, String[] files, String[] mimes, String subject, String text, String title )
 	{
-		if( files.length > 0 && authority == null )
+		if( files.length > 0 && GetAuthority( context ) == null )
 		{
-			// Find the authority of ContentProvider first
-			// Credit: https://stackoverflow.com/a/2001769/2373034
-			for( PackageInfo pack : context.getPackageManager().getInstalledPackages( PackageManager.GET_PROVIDERS ) )
-			{
-				if( pack.packageName.equals( context.getPackageName() ) )
-				{
-					ProviderInfo[] providers = pack.providers;
-					if( providers != null )
-					{
-						for( ProviderInfo provider : providers )
-						{
-							if( provider.name.equals( UnitySSContentProvider.class.getName() ) && provider.packageName.equals( context.getPackageName() )
-									&& provider.authority.length() > 0 )
-							{
-								authority = provider.authority;
-								break;
-							}
-						}
-					}
-				}
-			}
-
-			if( authority == null )
-			{
-				Log.e( "Unity", "Can't file ContentProvider, share not possible!" );
-				return;
-			}
+			Log.e( "Unity", "Can't find ContentProvider, share not possible!" );
+			return;
 		}
 
 		Intent intent = new Intent();
@@ -150,6 +128,106 @@ public class NativeShare
 		intent.setType( mime );
 		intent.setFlags( Intent.FLAG_GRANT_READ_URI_PERMISSION );
 
-		context.startActivity( Intent.createChooser( intent, title ) );
+		if( targetPackage.length() > 0 )
+		{
+			intent.setPackage( targetPackage );
+
+			if( targetClass.length() > 0 )
+				intent.setClassName( targetPackage, targetClass );
+		}
+
+		if( context.getPackageManager().queryIntentActivities( intent, PackageManager.MATCH_DEFAULT_ONLY ).size() == 1 )
+			context.startActivity( intent );
+		else
+			context.startActivity( Intent.createChooser( intent, title ) );
+	}
+
+	private static String GetAuthority( Context context )
+	{
+		if( authority == null )
+		{
+			// Find the authority of ContentProvider first
+			// Credit: https://stackoverflow.com/a/2001769/2373034
+			try
+			{
+				PackageInfo packageInfo = context.getPackageManager().getPackageInfo( context.getPackageName(), PackageManager.GET_PROVIDERS );
+				ProviderInfo[] providers = packageInfo.providers;
+				if( providers != null )
+				{
+					for( ProviderInfo provider : providers )
+					{
+						if( provider.name.equals( UnitySSContentProvider.class.getName() ) && provider.packageName.equals( context.getPackageName() )
+								&& provider.authority.length() > 0 )
+						{
+							authority = provider.authority;
+							break;
+						}
+					}
+				}
+			}
+			catch( Exception e )
+			{
+				Log.e( "Unity", "Exception:", e );
+			}
+		}
+
+		return authority;
+	}
+
+	public static boolean TargetExists( Context context, String packageName, String className )
+	{
+		try
+		{
+			if( className.length() == 0 )
+			{
+				context.getPackageManager().getPackageInfo( packageName, 0 );
+				return true;
+			}
+
+			PackageInfo packageInfo = context.getPackageManager().getPackageInfo( packageName, PackageManager.GET_ACTIVITIES );
+			ActivityInfo[] activities = packageInfo.activities;
+			if( activities != null )
+			{
+				for( ActivityInfo activityInfo : activities )
+				{
+					if( activityInfo.name.equals( className ) )
+						return true;
+				}
+			}
+
+			return false;
+		}
+		catch( PackageManager.NameNotFoundException e )
+		{
+			return false;
+		}
+	}
+
+	public static String FindMatchingTarget( Context context, String packageNameRegex, String classNameRegex )
+	{
+		List<PackageInfo> packages = context.getPackageManager().getInstalledPackages( PackageManager.GET_ACTIVITIES );
+		if( packages != null )
+		{
+			Pattern packagePattern = Pattern.compile( packageNameRegex );
+			Pattern classPattern = classNameRegex.length() > 0 ? Pattern.compile( classNameRegex ) : null;
+
+			for( PackageInfo packageInfo : packages )
+			{
+				if( packagePattern.matcher( packageInfo.packageName ).find() )
+				{
+					ActivityInfo[] activities = packageInfo.activities;
+					if( activities != null )
+					{
+						for( ActivityInfo activityInfo : activities )
+						{
+							if( classPattern == null || classPattern.matcher( activityInfo.name ).find() )
+								return packageInfo.packageName + ">" + activityInfo.name;
+						}
+					}
+				}
+			}
+		}
+
+		return "";
 	}
 }

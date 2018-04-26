@@ -6,7 +6,7 @@ extern UIViewController* UnityGetGLViewController();
 
 // Credit: https://github.com/ChrisMaire/unity-native-sharing
 
-extern "C" void _Share( const char* files[], int filesCount, char* subject, const char* text ) 
+extern "C" void _NativeShare_Share( const char* files[], int filesCount, char* subject, const char* text ) 
 {
 	NSMutableArray *items = [NSMutableArray new];
 
