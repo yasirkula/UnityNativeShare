@@ -22,6 +22,8 @@ You can set the plugin up in a few easy steps:
 
 Here, you should change **MY_UNIQUE_AUTHORITY** with a **unique string**. That is important because two apps with the same **android:authorities** string in their `<provider>` tag can't be installed on the same device. Just make it something unique, like your bundle identifier, if you like.
 
+To verify this step, you can check the contents of *Temp/StagingArea/AndroidManifest.xml* to see if the *<provider ... />* is still there **after** building your project to Android. 
+
 - *for iOS*: there are two ways to set up the plugin on iOS:
 
 #### a. Automated Setup for iOS
