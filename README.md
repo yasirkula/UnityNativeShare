@@ -6,11 +6,12 @@
 
 This plugin helps you natively share files (images, videos, documents, etc.) and/or plain text on Android & iOS. A **ContentProvider** is used to share the media on Android. 
 
-You can set the plugin up in a few easy steps:
+After importing **NativeShare.unitypackage** to your project, only a few steps are required to set up the plugin:
 
-- Import **NativeShare.unitypackage** to your project
-- *for Android*: using a ContentProvider requires a small modification in AndroidManifest. If your project does not have an **AndroidManifest.xml** file located at **Assets/Plugins/Android**, you should copy Unity's default AndroidManifest.xml from *C:\Program Files\Unity\Editor\Data\PlaybackEngines\AndroidPlayer* (it might be located in a subfolder, like '*Apk*') to *Assets/Plugins/Android* ([credit](http://answers.unity3d.com/questions/536095/how-to-write-an-androidmanifestxml-combining-diffe.html))
-- *for Android*: inside the `<application>...</application>` tag of your AndroidManifest, insert the following code snippet:
+### Android Setup
+
+- using a ContentProvider requires a small modification in AndroidManifest. If your project does not have an **AndroidManifest.xml** file located at **Assets/Plugins/Android**, you should copy Unity's default AndroidManifest.xml from *C:\Program Files\Unity\Editor\Data\PlaybackEngines\AndroidPlayer* (it might be located in a subfolder, like '*Apk*') to *Assets/Plugins/Android* ([credit](http://answers.unity3d.com/questions/536095/how-to-write-an-androidmanifestxml-combining-diffe.html))
+- inside the `<application>...</application>` tag of your AndroidManifest, insert the following code snippet:
 
 ```xml
 <provider
@@ -24,12 +25,16 @@ Here, you should change **MY_UNIQUE_AUTHORITY** with a **unique string**. That i
 
 To verify this step, you can check the contents of *Temp/StagingArea/AndroidManifest.xml* to see if the *<provider ... />* is still there **after** building your project to Android. 
 
-- *for iOS*: there are two ways to set up the plugin on iOS:
+### iOS Setup
+
+There are two ways to set up the plugin on iOS:
 
 #### a. Automated Setup for iOS
-- change the value of **PHOTO_LIBRARY_USAGE_DESCRIPTION** in *Plugins/NativeShare/Editor/NSPostProcessBuild.cs* (optional)
+
+- (optional) change the value of **PHOTO_LIBRARY_USAGE_DESCRIPTION** in *Plugins/NativeShare/Editor/NSPostProcessBuild.cs*
 
 #### b. Manual Setup for iOS
+
 - set the value of **ENABLED** to *false* in *NSPostProcessBuild.cs*
 - build your project
 - enter a **Photo Library Usage Description** in Xcode (in case user decides to save the shared media to Photos)
@@ -76,6 +81,9 @@ private IEnumerator TakeSSAndShare()
 
 	string filePath = Path.Combine( Application.temporaryCachePath, "shared img.png" );
 	File.WriteAllBytes( filePath, ss.EncodeToPNG() );
+	
+	// To avoid memory leaks
+	Destroy( ss );
 
 	new NativeShare().AddFile( filePath ).SetSubject( "Subject goes here" ).SetText( "Hello world!" ).Share();
 
