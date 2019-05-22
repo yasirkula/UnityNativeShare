@@ -23,7 +23,9 @@ After importing **NativeShare.unitypackage** to your project, only a few steps a
 
 Here, you should change **MY_UNIQUE_AUTHORITY** with a **unique string**. That is important because two apps with the same **android:authorities** string in their `<provider>` tag can't be installed on the same device. Just make it something unique, like your bundle identifier, if you like.
 
-To verify this step, you can check the contents of *Temp/StagingArea/AndroidManifest.xml* to see if the *<provider ... />* is still there **after** building your project to Android. 
+To verify this step, you can check the contents of *Temp/StagingArea/AndroidManifest.xml* to see if the *<provider ... />* is still there **after** building your project to Android.
+
+**NOTE:** if you are also using the [NativeCamera](https://github.com/yasirkula/UnityNativeCamera/) plugin, make sure that each plugin's provider has a different **android:authorities** string.  
 
 ### iOS Setup
 
@@ -60,6 +62,23 @@ Finally, calling the **Share()** function of the NativeShare object will do the 
 ## Utility Functions
 - `bool NativeShare.TargetExists( string androidPackageName, string androidClassName = null )`: returns whether the application with the specified package/class name exists on the Android device. If *androidClassName* is left null, only the package name is queried. This function always returns true on iOS
 - `bool FindTarget( out string androidPackageName, out string androidClassName, string packageNameRegex, string classNameRegex = null )`: finds the package/class name of an installed application on the Android device using regular expressions. Returns true if a matching package/class name is found successfully. Can be useful when you want to use the *SetTarget* function but don't know the exact package/class name of the target activity. If *classNameRegex* is left null, the first activity in the matching package is returned. This function always returns false on iOS
+
+## FAQ
+- **I can't share image with text on X app**
+
+It is just not possible to share an image/file with text/subject on some apps (e.g. Facebook), they intentionally omit either the image or the text from the shared content. These apps require you to use their own SDKs for complex share actions. For best compatibility, I'd recommend you to share either only image or only text.
+
+- **Can't share, it says "Can't file ContentProvider, share not possible!" in Logcat**
+
+Make sure that you've added the provider to the **AndroidManifest.xml** located exactly at **Assets/Plugins/Android** and verify that it is inserted in-between the `<application>...</application>` tags.
+
+- **Can't share, it says "java.lang.ClassNotFoundException: com.yasirkula.unity.NativeShare" in Logcat**
+
+If your project uses ProGuard, try adding the following line to ProGuard filters: `-keep class com.yasirkula.unity.* { *; }`
+
+- **My app crashes at startup after importing NativeShare to my project**
+
+Make sure that you didn't touch the provider's **android:name** value, it **must** stay as is. You only need to change the **android:authorities** string.
 
 ## Example Code
 The following code captures the screenshot of the game whenever you tap the screen, saves it in a temporary path and then shares it:
