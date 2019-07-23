@@ -156,7 +156,8 @@ public class NativeShare
 				{
 					for( ProviderInfo provider : providers )
 					{
-						if( provider.name.equals( UnitySSContentProvider.class.getName() ) && provider.packageName.equals( context.getPackageName() )
+						if( provider.name != null && provider.packageName != null && provider.authority != null &&
+								provider.name.equals( UnitySSContentProvider.class.getName() ) && provider.packageName.equals( context.getPackageName() )
 								&& provider.authority.length() > 0 )
 						{
 							authority = provider.authority;

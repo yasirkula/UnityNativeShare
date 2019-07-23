@@ -44,10 +44,8 @@ import java.util.Map;
 
 public class UnitySSContentProvider extends ContentProvider
 {
-	private static final String[] COLUMNS = {
-			OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE };
-	private static final String
-			META_DATA_FILE_PROVIDER_PATHS = "android.support.FILE_PROVIDER_PATHS";
+	private static final String[] COLUMNS = { OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE };
+	private static final String META_DATA_FILE_PROVIDER_PATHS = "android.support.FILE_PROVIDER_PATHS";
 	private static final String TAG_ROOT_PATH = "root-path";
 	private static final String TAG_FILES_PATH = "files-path";
 	private static final String TAG_CACHE_PATH = "cache-path";
