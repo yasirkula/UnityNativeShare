@@ -7,19 +7,13 @@ E-mail: yasirkula@gmail.com
 This plugin helps you natively share files (images, videos, documents, etc.) and/or plain text on Android & iOS. A ContentProvider is used to share the media on Android.
 
 2. HOW TO
-for Android: using a ContentProvider requires a small modification in AndroidManifest. If your project does not have an AndroidManifest.xml file located at Assets/Plugins/Android, you should copy Unity's default AndroidManifest.xml from C:\Program Files\Unity\Editor\Data\PlaybackEngines\AndroidPlayer (it might be located in a subfolder, like 'Apk') to Assets/Plugins/Android. Inside the <application>...</application> tag of your AndroidManifest, insert the following code snippet:
+2.1. Android Setup
+NativeShare no longer requires any manual setup on Android. If you were using an older version of the plugin, you need to remove NativeShare's "<provider ... />" from your AndroidManifest.xml.
 
-<provider
-  android:name="com.yasirkula.unity.UnitySSContentProvider"
-  android:authorities="MY_UNIQUE_AUTHORITY"
-  android:exported="false"
-  android:grantUriPermissions="true" />
+For reference, the legacy documentation is available at: https://github.com/yasirkula/UnityNativeShare/wiki/Manual-Setup-for-Android
 
-Here, you should change MY_UNIQUE_AUTHORITY with a unique string. That is important because two apps with the same android:authorities string in their <provider> tag can't be installed on the same device. Just make it something unique, like your bundle identifier, if you like.
-
-NOTE: if you are also using the NativeCamera plugin, make sure that each plugin's provider has a different android:authorities string.
-
-for iOS: there are two ways to set up the plugin on iOS:
+2.2. iOS Setup
+There are two ways to set up the plugin on iOS:
 
 a. Automated Setup for iOS
 - change the value of PHOTO_LIBRARY_USAGE_DESCRIPTION in Plugins/NativeShare/Editor/NSPostProcessBuild.cs (optional)
@@ -35,13 +29,10 @@ b. Manual Setup for iOS
 It is just not possible to share an image/file with text/subject on some apps (e.g. Facebook), they intentionally omit either the image or the text from the shared content. These apps require you to use their own SDKs for complex share actions. For best compatibility, I'd recommend you to share either only image or only text.
 
 - Can't share, it says "Can't file ContentProvider, share not possible!" in Logcat
-Make sure that you've added the provider to the AndroidManifest.xml located exactly at Assets/Plugins/Android and verify that it is inserted in-between the <application>...</application> tags.
+After building your project, verify that NativeShare's "<provider ... />" tag is inserted in-between the "<application>...</application>" tags of PROJECT_PATH/Temp/StagingArea/AndroidManifest.xml. If not, please contact me.
 
 - Can't share, it says "java.lang.ClassNotFoundException: com.yasirkula.unity.NativeShare" in Logcat
 If your project uses ProGuard, try adding the following line to ProGuard filters: -keep class com.yasirkula.unity.* { *; }
-
-- My app crashes at startup after importing NativeShare to my project
-Make sure that you didn't touch the provider's android:name value, it must stay as is. You only need to change the android:authorities string.
 
 4. SCRIPTING API
 Simply create a new NativeShare object and customize it by chaining the following functions as you like:

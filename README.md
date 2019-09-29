@@ -6,51 +6,23 @@
 
 This plugin helps you natively share files (images, videos, documents, etc.) and/or plain text on Android & iOS. A **ContentProvider** is used to share the media on Android. 
 
-After importing **NativeShare.unitypackage** to your project, only a few steps are required to set up the plugin:
+After importing [NativeShare.unitypackage](https://github.com/yasirkula/UnityNativeShare/releases) to your project, only a few steps are required to set up the plugin:
 
 ### Android Setup
 
-- using a ContentProvider requires a small modification in AndroidManifest. If your project does not have an **AndroidManifest.xml** file located at **Assets/Plugins/Android**, you should copy Unity's default AndroidManifest.xml from *C:\Program Files\Unity\Editor\Data\PlaybackEngines\AndroidPlayer* (it might be located in a subfolder, like '*Apk*') to *Assets/Plugins/Android* ([credit](http://answers.unity3d.com/questions/536095/how-to-write-an-androidmanifestxml-combining-diffe.html))
-- inside the `<application>...</application>` tag of your AndroidManifest, insert the following code snippet:
+NativeShare no longer requires any manual setup on Android. If you were using an older version of the plugin, you need to remove NativeShare's `<provider ... />` from your *AndroidManifest.xml*.
 
-```xml
-<provider
-  android:name="com.yasirkula.unity.UnitySSContentProvider"
-  android:authorities="MY_UNIQUE_AUTHORITY"
-  android:exported="false"
-  android:grantUriPermissions="true" />
-```
-
-Here, you should change **MY_UNIQUE_AUTHORITY** with a **unique string**. That is important because two apps with the same **android:authorities** string in their `<provider>` tag can't be installed on the same device. Just make it something unique, like your bundle identifier, if you like. For example:
-
-![AndroidManifest](screenshots/AndroidManifest.png)
-
-To verify this step, you can check the contents of *Temp/StagingArea/AndroidManifest.xml* to see if the *<provider ... />* is still there **after** building your project to Android.
-
-**NOTE:** if you are also using the [NativeCamera](https://github.com/yasirkula/UnityNativeCamera/) plugin, make sure that each plugin's provider has a different **android:authorities** string.  
+For reference, the legacy documentation is available at: https://github.com/yasirkula/UnityNativeShare/wiki/Manual-Setup-for-Android
 
 ### iOS Setup
 
 There are two ways to set up the plugin on iOS:
 
-#### a. Automated Setup for iOS
-
-- (optional) change the value of **PHOTO_LIBRARY_USAGE_DESCRIPTION** in *Plugins/NativeShare/Editor/NSPostProcessBuild.cs*
-
-#### b. Manual Setup for iOS
-
-- set the value of **ENABLED** to *false* in *NSPostProcessBuild.cs*
-- build your project
-- enter a **Photo Library Usage Description** in Xcode (in case user decides to save the shared media to Photos)
-
-![PhotoLibraryUsageDescription](iOSPhotoLibraryPermission.png)
-
-- also enter a **Photo Library Additions Usage Description**, if exists (see: https://github.com/yasirkula/UnityNativeGallery/issues/3)
-
-## Upgrading From Previous Versions
-Delete *Plugins/NativeShare.cs*, *Plugins/Android/NativeShare.jar* and *Plugins/iOS/NativeShare.mm* before upgrading the plugin.
+- **a. Automated Setup:** (optional) change the value of **PHOTO_LIBRARY_USAGE_DESCRIPTION** in *Plugins/NativeShare/Editor/NSPostProcessBuild.cs*
+- **b. Manual Setup:** see: https://github.com/yasirkula/UnityNativeShare/wiki/Manual-Setup-for-iOS
 
 ## How To
+
 Simply create a new **NativeShare** object and customize it by chaining the following functions as you like (see example code):
 
 - `SetSubject( string subject )`: sets the subject (primarily used in e-mail applications)
@@ -62,27 +34,26 @@ Simply create a new **NativeShare** object and customize it by chaining the foll
 Finally, calling the **Share()** function of the NativeShare object will do the trick!
 
 ## Utility Functions
+
 - `bool NativeShare.TargetExists( string androidPackageName, string androidClassName = null )`: returns whether the application with the specified package/class name exists on the Android device. If *androidClassName* is left null, only the package name is queried. This function always returns true on iOS
 - `bool FindTarget( out string androidPackageName, out string androidClassName, string packageNameRegex, string classNameRegex = null )`: finds the package/class name of an installed application on the Android device using regular expressions. Returns true if a matching package/class name is found successfully. Can be useful when you want to use the *SetTarget* function but don't know the exact package/class name of the target activity. If *classNameRegex* is left null, the first activity in the matching package is returned. This function always returns false on iOS
 
 ## FAQ
+
 - **I can't share image with text on X app**
 
 It is just not possible to share an image/file with text/subject on some apps (e.g. Facebook), they intentionally omit either the image or the text from the shared content. These apps require you to use their own SDKs for complex share actions. For best compatibility, I'd recommend you to share either only image or only text.
 
 - **Can't share, it says "Can't file ContentProvider, share not possible!" in Logcat**
 
-Make sure that you've added the provider to the **AndroidManifest.xml** located exactly at **Assets/Plugins/Android** and verify that it is inserted in-between the `<application>...</application>` tags.
+After building your project, verify that NativeShare's `<provider ... />` tag is inserted in-between the `<application>...</application>` tags of *PROJECT_PATH/Temp/StagingArea/AndroidManifest.xml*. If not, please create a new **Issue**.
 
 - **Can't share, it says "java.lang.ClassNotFoundException: com.yasirkula.unity.NativeShare" in Logcat**
 
 If your project uses ProGuard, try adding the following line to ProGuard filters: `-keep class com.yasirkula.unity.* { *; }`
 
-- **My app crashes at startup after importing NativeShare to my project**
-
-Make sure that you didn't touch the provider's **android:name** value, it **must** stay as is. You only need to change the **android:authorities** string.
-
 ## Example Code
+
 The following code captures the screenshot of the game whenever you tap the screen, saves it in a temporary path and then shares it:
 
 ```csharp

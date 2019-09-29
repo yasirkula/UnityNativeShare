@@ -99,7 +99,7 @@ public class NativeShare
 			{
 				intent.setAction( Intent.ACTION_SEND );
 
-				Uri contentUri = UnitySSContentProvider.getUriForFile( context, authority, new File( files[0] ) );
+				Uri contentUri = NativeShareContentProvider.getUriForFile( context, authority, new File( files[0] ) );
 				intent.putExtra( Intent.EXTRA_STREAM, contentUri );
 			}
 			else
@@ -109,7 +109,7 @@ public class NativeShare
 				ArrayList<Uri> uris = new ArrayList<Uri>( files.length );
 				for( int i = 0; i < files.length; i++ )
 				{
-					Uri contentUri = UnitySSContentProvider.getUriForFile( context, authority, new File( files[i] ) );
+					Uri contentUri = NativeShareContentProvider.getUriForFile( context, authority, new File( files[i] ) );
 					uris.add( contentUri );
 				}
 
@@ -157,7 +157,7 @@ public class NativeShare
 					for( ProviderInfo provider : providers )
 					{
 						if( provider.name != null && provider.packageName != null && provider.authority != null &&
-								provider.name.equals( UnitySSContentProvider.class.getName() ) && provider.packageName.equals( context.getPackageName() )
+								provider.name.equals( NativeShareContentProvider.class.getName() ) && provider.packageName.equals( context.getPackageName() )
 								&& provider.authority.length() > 0 )
 						{
 							authority = provider.authority;
