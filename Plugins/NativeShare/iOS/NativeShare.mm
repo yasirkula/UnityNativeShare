@@ -36,6 +36,6 @@ extern "C" void _NativeShare_Share( const char* files[], int filesCount, char* s
 	else // iPad
 	{
 		UIPopoverController *popup = [[UIPopoverController alloc] initWithContentViewController:activity];
-		[popup presentPopoverFromRect:CGRectMake( rootViewController.view.frame.size.width / 2, rootViewController.view.frame.size.height / 4, 0, 0 ) inView:rootViewController.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+		[popup presentPopoverFromRect:CGRectMake( rootViewController.view.frame.size.width / 2, rootViewController.view.frame.size.height / 2, 1, 1 ) inView:rootViewController.view permittedArrowDirections:0 animated:YES];
 	}
 }
