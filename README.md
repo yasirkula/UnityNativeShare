@@ -86,4 +86,5 @@ private IEnumerator TakeSSAndShare()
 ```
 
 ## Known Limitations
+- On Xiaomi devices, sharing doesn't work in landscape mode: https://github.com/yasirkula/UnityNativeShare/issues/56
 - Gif files are shared as static images on iOS (to learn more, please see this issue: https://github.com/yasirkula/UnityNativeShare/issues/22)
