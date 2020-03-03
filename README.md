@@ -40,6 +40,14 @@ Finally, calling the **Share()** function of the NativeShare object will do the 
 
 ## FAQ
 
+- **Can I get notified when the user returns to the app after sharing something (i.e. a callback)?**
+
+Unfortunately not.
+
+- **Can I share on a specific app?**
+
+On Android, you can share on a specific app via *SetTarget*. For iOS, you can check out this post and see if it works for you: https://forum.unity.com/threads/native-share-for-android-ios-open-source.519865/page-4#post-4011874
+
 - **I can't share image with text on X app**
 
 It is just not possible to share an image/file with text/subject on some apps (e.g. Facebook), they intentionally omit either the image or the text from the shared content. These apps require you to use their own SDKs for complex share actions. For best compatibility, I'd recommend you to share either only image or only text.
