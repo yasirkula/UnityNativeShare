@@ -1,6 +1,6 @@
 # Unity Native Share Plugin
 
-**Available on Asset Store:** https://www.assetstore.unity3d.com/en/#!/content/112731
+**Available on Asset Store:** https://assetstore.unity.com/packages/tools/integration/native-share-for-android-ios-112731
 
 **Forum Thread:** https://forum.unity.com/threads/native-share-for-android-ios-open-source.519865/
 
