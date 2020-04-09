@@ -4,6 +4,8 @@
 
 **Forum Thread:** https://forum.unity.com/threads/native-share-for-android-ios-open-source.519865/
 
+**[Support the Developer ☕](https://yasirkula.itch.io/unity3d)**
+
 This plugin helps you natively share files (images, videos, documents, etc.) and/or plain text on Android & iOS. A **ContentProvider** is used to share the media on Android. 
 
 After importing [NativeShare.unitypackage](https://github.com/yasirkula/UnityNativeShare/releases) to your project, only a few steps are required to set up the plugin:
