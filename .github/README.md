@@ -8,7 +8,15 @@
 
 This plugin helps you natively share files (images, videos, documents, etc.) and/or plain text on Android & iOS. A **ContentProvider** is used to share the media on Android. 
 
-After importing [NativeShare.unitypackage](https://github.com/yasirkula/UnityNativeShare/releases) to your project, only a few steps are required to set up the plugin:
+## INSTALLATION
+
+There are 4 ways to install this plugin:
+
+- import [NativeShare.unitypackage](https://github.com/yasirkula/UnityNativeShare/releases) via *Assets-Import Package*
+- clone/[download](https://github.com/yasirkula/UnityNativeShare/archive/master.zip) this repository and move the *Plugins* folder to your Unity project's *Assets* folder
+- import it from [Asset Store](https://assetstore.unity.com/packages/tools/integration/native-share-for-android-ios-112731)
+- *(via Package Manager)* add the following line to *Packages/manifest.json*:
+  - `"com.yasirkula.nativeshare": "https://github.com/yasirkula/UnityNativeShare.git",`
 
 ### Android Setup
 
@@ -20,10 +28,10 @@ For reference, the legacy documentation is available at: https://github.com/yasi
 
 There are two ways to set up the plugin on iOS:
 
-- **a. Automated Setup:** (optional) change the value of **PHOTO_LIBRARY_USAGE_DESCRIPTION** in *Plugins/NativeShare/Editor/NSPostProcessBuild.cs*
+- **a. Automated Setup:** *(optional)* change the value of **PHOTO_LIBRARY_USAGE_DESCRIPTION** in *Plugins/NativeShare/Editor/NSPostProcessBuild.cs*
 - **b. Manual Setup:** see: https://github.com/yasirkula/UnityNativeShare/wiki/Manual-Setup-for-iOS
 
-## How To
+## HOW TO
 
 Simply create a new **NativeShare** object and customize it by chaining the following functions as you like (see example code):
 
@@ -35,7 +43,7 @@ Simply create a new **NativeShare** object and customize it by chaining the foll
 
 Finally, calling the **Share()** function of the NativeShare object will do the trick!
 
-## Utility Functions
+## UTILITY FUNCTIONS
 
 - `bool NativeShare.TargetExists( string androidPackageName, string androidClassName = null )`: returns whether the application with the specified package/class name exists on the Android device. If *androidClassName* is left null, only the package name is queried. This function always returns true on iOS
 - `bool FindTarget( out string androidPackageName, out string androidClassName, string packageNameRegex, string classNameRegex = null )`: finds the package/class name of an installed application on the Android device using regular expressions. Returns true if a matching package/class name is found successfully. Can be useful when you want to use the *SetTarget* function but don't know the exact package/class name of the target activity. If *classNameRegex* is left null, the first activity in the matching package is returned. This function always returns false on iOS
@@ -62,7 +70,7 @@ After building your project, verify that NativeShare's `<provider ... />` tag is
 
 If your project uses ProGuard, try adding the following line to ProGuard filters: `-keep class com.yasirkula.unity.* { *; }`
 
-## Example Code
+## EXAMPLE CODE
 
 The following code captures the screenshot of the game whenever you tap the screen, saves it in a temporary path and then shares it:
 
@@ -95,6 +103,7 @@ private IEnumerator TakeSSAndShare()
 }
 ```
 
-## Known Limitations
+## KNOWN LIMITATIONS
+
 - On Xiaomi devices, sharing doesn't work in landscape mode: https://github.com/yasirkula/UnityNativeShare/issues/56
 - Gif files are shared as static images on iOS (to learn more, please see this issue: https://github.com/yasirkula/UnityNativeShare/issues/22)
