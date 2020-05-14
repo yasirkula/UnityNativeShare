@@ -10,13 +10,15 @@ This plugin helps you natively share files (images, videos, documents, etc.) and
 
 ## INSTALLATION
 
-There are 4 ways to install this plugin:
+There are 5 ways to install this plugin:
 
 - import [NativeShare.unitypackage](https://github.com/yasirkula/UnityNativeShare/releases) via *Assets-Import Package*
 - clone/[download](https://github.com/yasirkula/UnityNativeShare/archive/master.zip) this repository and move the *Plugins* folder to your Unity project's *Assets* folder
 - import it from [Asset Store](https://assetstore.unity.com/packages/tools/integration/native-share-for-android-ios-112731)
 - *(via Package Manager)* add the following line to *Packages/manifest.json*:
   - `"com.yasirkula.nativeshare": "https://github.com/yasirkula/UnityNativeShare.git",`
+- *(via [OpenUPM](https://openupm.com))* after installing [openupm-cli](https://github.com/openupm/openupm-cli), run the following command:
+  - `openupm add com.yasirkula.nativeshare`
 
 ### Android Setup
 
