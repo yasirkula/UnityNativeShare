@@ -36,10 +36,11 @@ public class NativeShare
 	}
 #elif !UNITY_EDITOR && UNITY_IOS
 	[System.Runtime.InteropServices.DllImport( "__Internal" )]
-	private static extern void _NativeShare_Share( string[] files, int filesCount, string subject, string text );
+	private static extern void _NativeShare_Share( string[] files, int filesCount, string subject, string text, string url, bool prioritizeFile );
 #endif
 
 	private string subject;
+	private string url;
 	private string text;
 	private string title;
 
@@ -66,6 +67,14 @@ public class NativeShare
 	{
 		if( subject != null )
 			this.subject = subject;
+
+		return this;
+	}
+
+	public NativeShare SetUrl(string url)
+	{
+		if (url != null)
+			this.url = url;
 
 		return this;
 	}
@@ -114,7 +123,7 @@ public class NativeShare
 
 	public void Share()
 	{
-		if( files.Count == 0 && subject.Length == 0 && text.Length == 0 )
+		if( files.Count == 0 && string.IsNullOrEmpty(subject) && string.IsNullOrEmpty(text) && string.IsNullOrEmpty(url) )
 		{
 			Debug.LogWarning( "Share Error: attempting to share nothing!" );
 			return;
@@ -123,15 +132,16 @@ public class NativeShare
 #if UNITY_EDITOR
 		Debug.Log( "Shared!" );
 #elif UNITY_ANDROID
-		AJC.CallStatic( "Share", Context, targetPackage, targetClass, files.ToArray(), mimes.ToArray(), subject, text, title );
+        string contextText = !string.IsNullOrEmpty(text) ? (text + " " + url) : url;
+		AJC.CallStatic( "Share", Context, targetPackage, targetClass, files.ToArray(), mimes.ToArray(), subject, contextText, title );
 #elif UNITY_IOS
-		_NativeShare_Share( files.ToArray(), files.Count, subject, text );
+		_NativeShare_Share( files.ToArray(), files.Count, subject, text, url, true );
 #else
 		Debug.Log( "No sharing set up for this platform." );
 #endif
 	}
 
-	#region Utility Functions
+#region Utility Functions
 	public static bool TargetExists( string androidPackageName, string androidClassName = null )
 	{
 #if !UNITY_EDITOR && UNITY_ANDROID
@@ -175,6 +185,6 @@ public class NativeShare
 		return false;
 #endif
 	}
-	#endregion
+#endregion
 }
 #pragma warning restore 0414
