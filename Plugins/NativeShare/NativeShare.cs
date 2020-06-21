@@ -36,7 +36,7 @@ public class NativeShare
 	}
 #elif !UNITY_EDITOR && UNITY_IOS
 	[System.Runtime.InteropServices.DllImport( "__Internal" )]
-	private static extern void _NativeShare_Share( string[] files, int filesCount, string subject, string text );
+	private static extern void _NativeShare_Share( string[] files, int filesCount, string subject, string text, string recipients );
 #endif
 
 	private string subject;
@@ -54,6 +54,7 @@ public class NativeShare
 		subject = string.Empty;
 		text = string.Empty;
 		title = string.Empty;
+		recipientmail = string.Empty;
 
 		targetPackage = string.Empty;
 		targetClass = string.Empty;
@@ -86,6 +87,14 @@ public class NativeShare
 		return this;
 	}
 
+	public NativeShare SetTitle( string recipients )
+	{
+		if( recipients != null )
+			this.recipients = recipients;
+
+		return this;
+	}
+
 	public NativeShare SetTarget( string androidPackageName, string androidClassName = null )
 	{
 		if( !string.IsNullOrEmpty( androidPackageName ) )
@@ -114,7 +123,7 @@ public class NativeShare
 
 	public void Share()
 	{
-		if( files.Count == 0 && subject.Length == 0 && text.Length == 0 )
+		if( files.Count == 0 && subject.Length == 0 && text.Length == 0 && recipients == 0)
 		{
 			Debug.LogWarning( "Share Error: attempting to share nothing!" );
 			return;
@@ -123,7 +132,7 @@ public class NativeShare
 #if UNITY_EDITOR
 		Debug.Log( "Shared!" );
 #elif UNITY_ANDROID
-		AJC.CallStatic( "Share", Context, targetPackage, targetClass, files.ToArray(), mimes.ToArray(), subject, text, title );
+		AJC.CallStatic( "Share", Context, targetPackage, targetClass, files.ToArray(), mimes.ToArray(), subject, text, title, recipients);
 #elif UNITY_IOS
 		_NativeShare_Share( files.ToArray(), files.Count, subject, text );
 #else

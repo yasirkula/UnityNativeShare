@@ -24,7 +24,7 @@ public class NativeShare
 {
 	private static String authority = null;
 
-	public static void Share( Context context, String targetPackage, String targetClass, String[] files, String[] mimes, String subject, String text, String title )
+	public static void Share( Context context, String targetPackage, String targetClass, String[] files, String[] mimes, String subject, String text, String title, String recipients)
 	{
 		if( files.length > 0 && GetAuthority( context ) == null )
 		{
@@ -39,6 +39,11 @@ public class NativeShare
 
 		if( text.length() > 0 )
 			intent.putExtra( Intent.EXTRA_TEXT, text );
+
+		if( recipients.length() > 0 )
+			intent.putExtra( Intent.EXTRA_TEXT, recipients );
+
+
 
 		String mime;
 		if( files.length > 0 )
