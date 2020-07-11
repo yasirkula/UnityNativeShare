@@ -27,7 +27,42 @@ extern "C" void _NativeShare_Share( const char* files[], int filesCount, char* s
 	UIActivityViewController *activity = [[UIActivityViewController alloc] initWithActivityItems:items applicationActivities:nil];
 	if( strlen( subject ) > 0 )
 		[activity setValue:[NSString stringWithUTF8String:subject] forKey:@"subject"];
-
+	
+	if( [[[UIDevice currentDevice] systemVersion] compare:@"8.0" options:NSNumericSearch] != NSOrderedAscending )
+	{
+		activity.completionWithItemsHandler = ^( UIActivityType activityType, BOOL completed, NSArray *returnedItems, NSError *activityError )
+		{
+			NSLog( @"Shared to %@ with result: %d", activityType, completed );
+			
+			if( activityError != nil )
+				NSLog( @"Share error: %@", activityError );
+			
+			const char *resultMessage = [[NSString stringWithFormat:@"%d%@", completed ? 1 : 2, activityType] UTF8String];
+			char *result = (char*) malloc( strlen( resultMessage ) + 1 );
+			strcpy( result, resultMessage );
+			
+			UnitySendMessage( "NSShareResultCallbackiOS", "OnShareCompleted", result );
+		};
+	}
+	else if( [[[UIDevice currentDevice] systemVersion] compare:@"6.0" options:NSNumericSearch] != NSOrderedAscending )
+	{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+		activity.completionHandler = ^( UIActivityType activityType, BOOL completed )
+		{
+			NSLog( @"Shared to %@ with result: %d", activityType, completed );
+			
+			const char *resultMessage = [[NSString stringWithFormat:@"%d%@", completed ? 1 : 2, activityType] UTF8String];
+			char *result = (char*) malloc( strlen( resultMessage ) + 1 );
+			strcpy( result, resultMessage );
+			
+			UnitySendMessage( "NSShareResultCallbackiOS", "OnShareCompleted", result );
+		};
+#pragma clang diagnostic pop
+	}
+	else
+		UnitySendMessage( "NSShareResultCallbackiOS", "OnShareCompleted", "" );
+	
 	UIViewController *rootViewController = UnityGetGLViewController();
 	if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone ) // iPhone
 	{
