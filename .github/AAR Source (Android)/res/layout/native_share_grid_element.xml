@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="top|center_horizontal">
+
+    <ImageView
+        android:id="@+id/native_share_app_icon"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:scaleType="fitCenter"/>
+
+    <TextView
+        android:id="@+id/native_share_app_name"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:paddingTop="4dp"
+        android:paddingBottom="0dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:gravity="top|center_horizontal"
+        tools:text="Activity Name"/>
+
+</LinearLayout>

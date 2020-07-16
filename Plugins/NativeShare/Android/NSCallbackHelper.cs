@@ -60,6 +60,8 @@ namespace NativeShareNamespace
 					result = NativeShare.ShareResult.Shared;
 					this.shareTarget = shareTarget;
 				}
+				else if( shareResult == NativeShare.ShareResult.NotShared && !string.IsNullOrEmpty( shareTarget ) )
+					this.shareTarget = shareTarget;
 			}
 			else
 			{

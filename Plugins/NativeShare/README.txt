@@ -25,6 +25,9 @@ b. Manual Setup for iOS
 - also enter a Photo Library Additions Usage Description to Info.plist in Xcode, if exists
 
 3. FAQ
+- Can I share on a specific app?
+On Android, you can share on a specific app via AddTarget. For iOS, you can check out this post and see if it works for you: https://forum.unity.com/threads/native-share-for-android-ios-open-source.519865/page-4#post-4011874
+
 - I can't share image with text on X app
 It is just not possible to share an image/file with text/subject on some apps (e.g. Facebook), they intentionally omit either the image or the text from the shared content. These apps require you to use their own SDKs for complex share actions. For best compatibility, I'd recommend you to share either only image or only text.
 
@@ -42,10 +45,10 @@ Simply create a new NativeShare object and customize it by chaining the followin
 - AddFile( string filePath, string mime = null ): adds the file at path to the share action. You can add multiple files of different types. The MIME of the file is automatically determined if left null; however, if the file doesn't have an extension and/or you already know the MIME of the file, you can enter the MIME manually. MIME has no effect on iOS
 - AddFile( Texture2D texture, string createdFileName = "Image.png" ): saves the texture to Application.temporaryCachePath with the specified filename and adds the image file to the share action
 - SetTitle( string title ): sets the title of the share dialog on Android platform. Has no effect on iOS
-- SetTarget( string androidPackageName, string androidClassName = null ): shares content on a specific application on Android platform. If androidClassName is left null, list of activities in the share dialog will be narrowed down to the activities in the specified androidPackageName that can handle this share action (if there is only one such activity, it will be launched directly). Note that androidClassName, if provided, must be the full name of the activity (with its package). This function has no effect on iOS
+- AddTarget( string androidPackageName, string androidClassName = null ): shares content on a specific application on Android platform. If androidClassName is left null, list of activities in the share dialog will be narrowed down to the activities in the specified androidPackageName that can handle this share action. Note that androidClassName, if provided, must be the full name of the activity (with its package). You can call this function multiple times. This function has no effect on iOS
 - SetCallback( ShareResultCallback callback ): invokes the callback function after the share action is completed. ShareResultCallback has the following signature: void ShareResultCallback( ShareResult result, string shareTarget )
   - "ShareResult result" can take 3 values:
-    - Unknown: we can't determine whether or not the user has shared the content. Old devices will always return this value (other values are supported on Android 22+ and iOS 6+ devices)
+    - Unknown: we can't determine whether or not the user has shared the content
 	- Shared: user has probably shared the content. This value guarantees that the user has at least selected an app from the share sheet. But it is impossible to say whether the user has actually shared the content or cancelled the operation right after selecting the app from the share sheet
 	- NotShared: either the user has closed the share sheet immediately or selected an app from the share sheet but then decided not to share the content (unfortunately, most apps return Shared for the latter case)
   - "string shareTarget" stores information about the app that the user has selected from the share sheet. It can be null or empty, if this information isn't provided. Usually, this is the package name/class name of the selected application. You can use this value to e.g. determine if the user has picked Twitter from the share sheet: shareTarget != null && shareTarget.ToLowerInvariant().Contains( "twitter" )
@@ -53,5 +56,4 @@ Simply create a new NativeShare object and customize it by chaining the followin
 Finally, calling the Share() function of the NativeShare object will present the share sheet.
 
 5. KNOWN LIMITATIONS
-- On Xiaomi devices, sharing doesn't work in landscape mode: https://github.com/yasirkula/UnityNativeShare/issues/56
 - Gif files are shared as static images on iOS (to learn more, please see this issue: https://github.com/yasirkula/UnityNativeShare/issues/22)

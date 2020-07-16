@@ -50,8 +50,10 @@ public class NativeShare
 	private string text = string.Empty;
 	private string title = string.Empty;
 
-	private string targetPackage = string.Empty;
-	private string targetClass = string.Empty;
+#if UNITY_EDITOR || UNITY_ANDROID
+	private readonly List<string> targetPackages = new List<string>( 0 );
+	private readonly List<string> targetClasses = new List<string>( 0 );
+#endif
 
 	private readonly List<string> files = new List<string>( 0 );
 	private readonly List<string> mimes = new List<string>( 0 );
@@ -82,18 +84,44 @@ public class NativeShare
 		return this;
 	}
 
+	[System.Obsolete( "Use AddTarget instead.", false )]
 	public NativeShare SetTarget( string androidPackageName, string androidClassName = null )
 	{
+#if UNITY_EDITOR || UNITY_ANDROID
+		targetPackages.Clear();
+		targetClasses.Clear();
+
+		AddTarget( androidPackageName, androidClassName );
+#endif
+
+		return this;
+	}
+
+	public NativeShare AddTarget( string androidPackageName, string androidClassName = null )
+	{
+#if UNITY_EDITOR || UNITY_ANDROID
 		if( !string.IsNullOrEmpty( androidPackageName ) )
 		{
-			targetPackage = androidPackageName;
-			targetClass = androidClassName ?? string.Empty;
+			if( androidClassName == null )
+				androidClassName = string.Empty;
+
+			bool isUnique = true;
+			for( int i = 0; i < targetPackages.Count; i++ )
+			{
+				if( targetPackages[i] == androidPackageName && targetClasses[i] == androidClassName )
+				{
+					isUnique = false;
+					break;
+				}
+			}
+
+			if( isUnique )
+			{
+				targetPackages.Add( androidPackageName );
+				targetClasses.Add( androidClassName );
+			}
 		}
-		else
-		{
-			targetPackage = string.Empty;
-			targetClass = string.Empty;
-		}
+#endif
 
 		return this;
 	}
@@ -154,7 +182,7 @@ public class NativeShare
 		if( callback != null )
 			callback( ShareResult.Shared, null );
 #elif UNITY_ANDROID
-		AJC.CallStatic( "Share", Context, new NSShareResultCallbackAndroid( callback ), targetPackage, targetClass, files.ToArray(), mimes.ToArray(), subject, text, title );
+		AJC.CallStatic( "Share", Context, new NSShareResultCallbackAndroid( callback ), targetPackages.ToArray(), targetClasses.ToArray(), files.ToArray(), mimes.ToArray(), subject, text, title );
 #elif UNITY_IOS
 		NSShareResultCallbackiOS.Initialize( callback );
 		_NativeShare_Share( files.ToArray(), files.Count, subject, text );

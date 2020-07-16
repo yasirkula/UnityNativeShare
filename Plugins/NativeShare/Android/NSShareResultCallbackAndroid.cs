@@ -23,6 +23,11 @@ namespace NativeShareNamespace
 
 			callbackHelper.OnShareCompleted( result, shareTarget );
 		}
+
+		public bool HasManagedCallback()
+		{
+			return callbackHelper && callbackHelper.callback != null;
+		}
 	}
 }
 #endif

@@ -7,4 +7,5 @@ package com.yasirkula.unity;
 public interface NativeShareResultReceiver
 {
 	void OnShareCompleted( int result, String shareTarget );
+	boolean HasManagedCallback();
 }
