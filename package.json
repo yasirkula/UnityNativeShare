@@ -1,6 +1,6 @@
 {
   "name": "com.yasirkula.nativeshare",
   "displayName": "Native Share",
-  "version": "1.3.5",
+  "version": "1.3.6",
   "description": "This plugin helps you natively share files (images, videos, documents, etc.) and/or plain text on Android & iOS. A ContentProvider is used to share the media on Android."
 }

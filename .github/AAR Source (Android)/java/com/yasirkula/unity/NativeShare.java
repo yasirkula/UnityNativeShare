@@ -117,7 +117,7 @@ public class NativeShare
 				else
 				{
 					int extensionStart = files.get( i ).lastIndexOf( '.' );
-					if( extensionStart < 0 || extensionStart == files.size() - 1 )
+					if( extensionStart < 0 || extensionStart == files.get( i ).length() - 1 )
 					{
 						mimeType = mimeSubtype = "*";
 						break;
