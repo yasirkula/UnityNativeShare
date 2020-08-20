@@ -15,7 +15,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -31,6 +33,8 @@ public class NativeShare
 	public static NativeShareResultReceiver shareResultReceiver;
 
 	public static boolean alwaysUseCustomShareDialog = false;
+
+	private static int isXiaomiOrMIUI = 0; // 1: true, -1: false
 
 	public static void Share( final Context context, final NativeShareResultReceiver shareResultReceiver, final String[] targetPackages, final String[] targetClasses, final String[] files, final String[] mimes, final String subject, final String text, final String title )
 	{
@@ -62,7 +66,7 @@ public class NativeShare
 				shouldUseCustomShareDialog = true; // At least some Huawei devices don't support callback for unknown reasons
 		}
 
-		if( !shouldUseCustomShareDialog && "xiaomi".equalsIgnoreCase( android.os.Build.MANUFACTURER ) && IsUnityInLandscapeMode( (Activity) context ) )
+		if( !shouldUseCustomShareDialog && IsXiaomiOrMIUI() && IsUnityInLandscapeMode( (Activity) context ) )
 			shouldUseCustomShareDialog = true; // At least some Xiaomi devices can't display share dialog properly when in landscape mode (Issue #56)
 
 		if( shouldUseCustomShareDialog )
@@ -248,6 +252,60 @@ public class NativeShare
 	private static boolean IsUnityInLandscapeMode( Activity unityActivity )
 	{
 		return unityActivity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+	}
+
+	private static boolean IsXiaomiOrMIUI()
+	{
+		if( isXiaomiOrMIUI > 0 )
+			return true;
+		else if( isXiaomiOrMIUI < 0 )
+			return false;
+
+		if( "xiaomi".equalsIgnoreCase( android.os.Build.MANUFACTURER ) )
+		{
+			isXiaomiOrMIUI = 1;
+			return true;
+		}
+
+		// Check if device is using MIUI
+		// Credit: https://gist.github.com/Muyangmin/e8ec1002c930d8df3df46b306d03315d
+		String line;
+		BufferedReader inputStream = null;
+		try
+		{
+			java.lang.Process process = Runtime.getRuntime().exec( "getprop ro.miui.ui.version.name" );
+			inputStream = new BufferedReader( new InputStreamReader( process.getInputStream() ), 1024 );
+			line = inputStream.readLine();
+
+			if( line != null && line.length() > 0 )
+			{
+				isXiaomiOrMIUI = 1;
+				return true;
+			}
+			else
+			{
+				isXiaomiOrMIUI = -1;
+				return false;
+			}
+		}
+		catch( Exception e )
+		{
+			isXiaomiOrMIUI = -1;
+			return false;
+		}
+		finally
+		{
+			if( inputStream != null )
+			{
+				try
+				{
+					inputStream.close();
+				}
+				catch( Exception e )
+				{
+				}
+			}
+		}
 	}
 
 	public static boolean TargetExists( Context context, String packageName, String className )
