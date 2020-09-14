@@ -149,11 +149,11 @@ public class NativeShare
 				createdFileName = "Image.png";
 
 			bool saveAsJpeg;
-			if( createdFileName.EndsWith( ".jpeg" ) || createdFileName.EndsWith( ".jpg" ) )
+			if( createdFileName.EndsWith( ".jpeg", System.StringComparison.OrdinalIgnoreCase ) || createdFileName.EndsWith( ".jpg", System.StringComparison.OrdinalIgnoreCase ) )
 				saveAsJpeg = true;
 			else
 			{
-				if( !createdFileName.EndsWith( ".png" ) )
+				if( !createdFileName.EndsWith( ".png", System.StringComparison.OrdinalIgnoreCase ) )
 					createdFileName += ".png";
 
 				saveAsJpeg = false;
@@ -272,7 +272,7 @@ public class NativeShare
 			Graphics.Blit( texture, rt );
 			RenderTexture.active = rt;
 
-			sourceTexReadable = new Texture2D( texture.width, texture.height, texture.format, false );
+			sourceTexReadable = new Texture2D( texture.width, texture.height, isJpeg ? TextureFormat.RGB24 : TextureFormat.RGBA32, false );
 			sourceTexReadable.ReadPixels( new Rect( 0, 0, texture.width, texture.height ), 0, 0, false );
 			sourceTexReadable.Apply( false, false );
 		}
