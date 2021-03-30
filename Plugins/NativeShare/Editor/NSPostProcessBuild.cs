@@ -6,44 +6,47 @@ using UnityEditor.Callbacks;
 using UnityEditor.iOS.Xcode;
 #endif
 
-public class NSPostProcessBuild 
+namespace NativeShareNamespace
 {
-	private const bool ENABLED = true;
-	private const string PHOTO_LIBRARY_USAGE_DESCRIPTION = "The app requires access to Photos to save media to it.";
-
-	[InitializeOnLoadMethod]
-	public static void ValidatePlugin()
+	public class NSPostProcessBuild
 	{
-		string jarPath = "Assets/Plugins/NativeShare/Android/NativeShare.jar";
-		if( File.Exists( jarPath ) )
+		private const bool ENABLED = true;
+		private const string PHOTO_LIBRARY_USAGE_DESCRIPTION = "The app requires access to Photos to save media to it.";
+
+		[InitializeOnLoadMethod]
+		public static void ValidatePlugin()
 		{
-			Debug.Log( "Deleting obsolete " + jarPath );
-			AssetDatabase.DeleteAsset( jarPath );
+			string jarPath = "Assets/Plugins/NativeShare/Android/NativeShare.jar";
+			if( File.Exists( jarPath ) )
+			{
+				Debug.Log( "Deleting obsolete " + jarPath );
+				AssetDatabase.DeleteAsset( jarPath );
+			}
 		}
-	}
 
 #if UNITY_IOS
 #pragma warning disable 0162
-	[PostProcessBuild]
-	public static void OnPostprocessBuild( BuildTarget target, string buildPath )
-	{
-		if( !ENABLED )
-			return;
-
-		if( target == BuildTarget.iOS )
+		[PostProcessBuild]
+		public static void OnPostprocessBuild( BuildTarget target, string buildPath )
 		{
-			string plistPath = Path.Combine( buildPath, "Info.plist" );
+			if( !ENABLED )
+				return;
 
-			PlistDocument plist = new PlistDocument();
-			plist.ReadFromString( File.ReadAllText( plistPath ) );
+			if( target == BuildTarget.iOS )
+			{
+				string plistPath = Path.Combine( buildPath, "Info.plist" );
 
-			PlistElementDict rootDict = plist.root;
-			rootDict.SetString( "NSPhotoLibraryUsageDescription", PHOTO_LIBRARY_USAGE_DESCRIPTION );
-			rootDict.SetString( "NSPhotoLibraryAddUsageDescription", PHOTO_LIBRARY_USAGE_DESCRIPTION );
+				PlistDocument plist = new PlistDocument();
+				plist.ReadFromString( File.ReadAllText( plistPath ) );
 
-			File.WriteAllText( plistPath, plist.WriteToString() );
+				PlistElementDict rootDict = plist.root;
+				rootDict.SetString( "NSPhotoLibraryUsageDescription", PHOTO_LIBRARY_USAGE_DESCRIPTION );
+				rootDict.SetString( "NSPhotoLibraryAddUsageDescription", PHOTO_LIBRARY_USAGE_DESCRIPTION );
+
+				File.WriteAllText( plistPath, plist.WriteToString() );
+			}
 		}
-	}
 #pragma warning restore 0162
 #endif
+	}
 }

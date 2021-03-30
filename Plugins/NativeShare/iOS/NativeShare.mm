@@ -1,19 +1,80 @@
+#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 #ifdef UNITY_4_0 || UNITY_5_0
 #import "iPhone_View.h"
 #else
 extern UIViewController* UnityGetGLViewController();
 #endif
 
+#define CHECK_IOS_VERSION( version )  ([[[UIDevice currentDevice] systemVersion] compare:version options:NSNumericSearch] != NSOrderedAscending)
+
 // Credit: https://github.com/ChrisMaire/unity-native-sharing
 
-extern "C" void _NativeShare_Share( const char* files[], int filesCount, char* subject, const char* text ) 
+// Credit: https://stackoverflow.com/a/29916845/2373034
+@interface UNativeShareEmailItemProvider : NSObject <UIActivityItemSource>
+@property (nonatomic, strong) NSString *subject;
+@property (nonatomic, strong) NSString *body;
+@end
+
+// Credit: https://stackoverflow.com/a/29916845/2373034
+@implementation UNativeShareEmailItemProvider
+- (id)activityViewControllerPlaceholderItem:(UIActivityViewController *)activityViewController
+{
+	return [self body];
+}
+
+- (id)activityViewController:(UIActivityViewController *)activityViewController itemForActivityType:(NSString *)activityType
+{
+	return [self body];
+}
+
+- (NSString *)activityViewController:(UIActivityViewController *)activityViewController subjectForActivityType:(NSString *)activityType
+{
+	return [self subject];
+}
+@end
+
+extern "C" void _NativeShare_Share( const char* files[], int filesCount, const char* subject, const char* text, const char* link ) 
 {
 	NSMutableArray *items = [NSMutableArray new];
-
-	if( strlen( text ) > 0 )
+	
+	// When there is a subject on iOS 7 or later, text is provided together with subject via a UNativeShareEmailItemProvider
+	// Credit: https://stackoverflow.com/a/29916845/2373034
+	if( strlen( subject ) > 0 && CHECK_IOS_VERSION( @"7.0" ) )
+	{
+		UNativeShareEmailItemProvider *emailItem = [UNativeShareEmailItemProvider new];
+		emailItem.subject = [NSString stringWithUTF8String:subject];
+		emailItem.body = [NSString stringWithUTF8String:text];
+		
+		[items addObject:emailItem];
+	}
+	else if( strlen( text ) > 0 )
 		[items addObject:[NSString stringWithUTF8String:text]];
-
-	// Credit: https://answers.unity.com/answers/862224/view.html
+	
+	// Credit: https://forum.unity.com/threads/native-share-for-android-ios-open-source.519865/page-13#post-6942362
+	if( strlen( link ) > 0 )
+	{
+		NSString *urlRaw = [NSString stringWithUTF8String:link];
+		NSURL *url = [NSURL URLWithString:urlRaw];
+		if( url == nil )
+		{
+			// Try escaping the URL
+			if( CHECK_IOS_VERSION( @"9.0" ) )
+			{
+				url = [NSURL URLWithString:[urlRaw stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]]];
+				if( url == nil )
+					url = [NSURL URLWithString:[urlRaw stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
+			}
+			else
+				url = [NSURL URLWithString:[urlRaw stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+		}
+		
+		if( url != nil )
+			[items addObject:url];
+		else
+			NSLog( @"Couldn't create a URL from link: %@", urlRaw );
+	}
+	
 	for( int i = 0; i < filesCount; i++ ) 
 	{
 		NSString *filePath = [NSString stringWithUTF8String:files[i]];
@@ -23,12 +84,19 @@ extern "C" void _NativeShare_Share( const char* files[], int filesCount, char* s
 		else
 			[items addObject:[NSURL fileURLWithPath:filePath]];
 	}
-
+	
 	UIActivityViewController *activity = [[UIActivityViewController alloc] initWithActivityItems:items applicationActivities:nil];
 	if( strlen( subject ) > 0 )
 		[activity setValue:[NSString stringWithUTF8String:subject] forKey:@"subject"];
+	else if( [items count] == 0 )
+	{
+		NSLog( @"Share canceled because there is nothing to share..." );
+		UnitySendMessage( "NSShareResultCallbackiOS", "OnShareCompleted", "2" );
+		
+		return;
+	}
 	
-	if( [[[UIDevice currentDevice] systemVersion] compare:@"8.0" options:NSNumericSearch] != NSOrderedAscending )
+	if( CHECK_IOS_VERSION( @"8.0" ) )
 	{
 		activity.completionWithItemsHandler = ^( UIActivityType activityType, BOOL completed, NSArray *returnedItems, NSError *activityError )
 		{
@@ -44,7 +112,7 @@ extern "C" void _NativeShare_Share( const char* files[], int filesCount, char* s
 			UnitySendMessage( "NSShareResultCallbackiOS", "OnShareCompleted", result );
 		};
 	}
-	else if( [[[UIDevice currentDevice] systemVersion] compare:@"6.0" options:NSNumericSearch] != NSOrderedAscending )
+	else if( CHECK_IOS_VERSION( @"6.0" ) )
 	{
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"

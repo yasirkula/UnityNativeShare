@@ -42,6 +42,7 @@ Simply create a new NativeShare object and customize it by chaining the followin
 
 - SetSubject( string subject ): sets the subject (primarily used in e-mail applications)
 - SetText( string text ): sets the shared text. Note that the Facebook app will omit text, if exists
+- SetUrl( string url ): sets the shared url. On supported iOS apps, this url is used to generate a preview of the target webpage. Other iOS apps may append the url to the text or omit it. While sharing a file on iOS or while sharing anything on Android, the url is appended to the text (unless the text already contains the url)
 - AddFile( string filePath, string mime = null ): adds the file at path to the share action. You can add multiple files of different types. The MIME of the file is automatically determined if left null; however, if the file doesn't have an extension and/or you already know the MIME of the file, you can enter the MIME manually. MIME has no effect on iOS
 - AddFile( Texture2D texture, string createdFileName = "Image.png" ): saves the texture to Application.temporaryCachePath with the specified filename and adds the image file to the share action
 - SetTitle( string title ): sets the title of the share dialog on Android platform. Has no effect on iOS
