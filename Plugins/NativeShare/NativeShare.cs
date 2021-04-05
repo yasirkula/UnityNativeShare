@@ -1,7 +1,9 @@
 using UnityEngine;
 using System.IO;
 using System.Collections.Generic;
+#if UNITY_ANDROID || UNITY_IOS
 using NativeShareNamespace;
+#endif
 
 #pragma warning disable 0414
 public class NativeShare
