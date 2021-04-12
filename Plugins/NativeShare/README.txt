@@ -35,7 +35,7 @@ It is just not possible to share an image/file with text/subject on some apps (e
 After building your project, verify that NativeShare's "<provider ... />" tag is inserted in-between the "<application>...</application>" tags of PROJECT_PATH/Temp/StagingArea/AndroidManifest.xml. If not, please contact me.
 
 - Can't share, it says "java.lang.ClassNotFoundException: com.yasirkula.unity.NativeShare" in Logcat
-If your project uses ProGuard, try adding the following line to ProGuard filters: -keep class com.yasirkula.unity.* { *; }
+If you are sure that your plugin is up-to-date, then enable "Custom Proguard File" option from Player Settings and add the following line to that file: -keep class com.yasirkula.unity.* { *; }
 
 4. SCRIPTING API
 Simply create a new NativeShare object and customize it by chaining the following functions as you like:

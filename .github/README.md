@@ -74,7 +74,7 @@ After building your project, verify that NativeShare's `<provider ... />` tag is
 
 - **Can't share, it says "java.lang.ClassNotFoundException: com.yasirkula.unity.NativeShare" in Logcat**
 
-If your project uses ProGuard, try adding the following line to ProGuard filters: `-keep class com.yasirkula.unity.* { *; }`
+If you are sure that your plugin is up-to-date, then enable **Custom Proguard File** option from *Player Settings* and add the following line to that file: `-keep class com.yasirkula.unity.* { *; }`
 
 ## EXAMPLE CODE
 
