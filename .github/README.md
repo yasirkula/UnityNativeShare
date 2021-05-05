@@ -68,9 +68,9 @@ On Android, you can share on a specific app via *AddTarget*. For iOS, you can ch
 
 It is just not possible to share an image/file with text/subject on some apps (e.g. Facebook), they intentionally omit either the image or the text from the shared content. These apps require you to use their own SDKs for complex share actions. For best compatibility, I'd recommend you to share either only image or only text.
 
-- **Can't share, it says "Can't file ContentProvider, share not possible!" in Logcat**
+- **I can't build the project to Android, it says "Android resource linking failed: unexpected element <queries> found in <manifest>" in the error message**
 
-After building your project, verify that NativeShare's `<provider ... />` tag is inserted in-between the `<application>...</application>` tags of *PROJECT_PATH/Temp/StagingArea/AndroidManifest.xml*. If not, please create a new **Issue**.
+NativeShare adds `<queries>` element to AndroidManifest.xml due to the new [package visibility change](https://developer.android.com/training/package-visibility). The build error can be fixed by following these steps: https://developers.google.com/ar/develop/unity/android-11-build (in my tests, changing "*Gradle installed with Unity*" wasn't necessary). In the worst case, if you are OK with NativeShare not working on some of the affected devices, then you can open *NativeShare.aar* with WinRAR or 7-Zip and then remove the `<queries>...</queries>` element from *AndroidManifest.xml*.
 
 - **Can't share, it says "java.lang.ClassNotFoundException: com.yasirkula.unity.NativeShare" in Logcat**
 

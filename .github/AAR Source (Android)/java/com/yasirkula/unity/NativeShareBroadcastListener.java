@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.IntentSender;
+import android.os.Build;
 import android.util.Log;
 
 // On Android 22 and newer devices, when standard ACTION_SEND share sheet is used, this BroadcastReceiver receives
@@ -16,33 +17,25 @@ import android.util.Log;
 @TargetApi( 22 )
 public class NativeShareBroadcastListener extends BroadcastReceiver
 {
-	private static final String BROADCAST_RECEIVER_FILTER = "com.yasirkula.unity.NATIVESHARE_RESULTRECEIVER";
-
-	private static NativeShareBroadcastListener broadcastReceiver;
-
 	public static IntentSender Initialize( Context context )
 	{
-		if( broadcastReceiver == null )
+		Intent receiverIntent = new Intent( context, NativeShareBroadcastListener.class );
+
+		int pendingIntentFlags = PendingIntent.FLAG_UPDATE_CURRENT;
+		if( Build.VERSION.SDK_INT >= 31 )
 		{
-			broadcastReceiver = new NativeShareBroadcastListener();
-			( (Activity) context ).getApplication().registerReceiver( broadcastReceiver, new IntentFilter( BROADCAST_RECEIVER_FILTER ) );
+			// We must mark PendingIntent as either mutable or immutable on Android 12+
+			// Maybe FLAG_IMMUTABLE is sufficient but the pre-31 default value was implicitly mutable and I don't trust
+			// all social apps to work correctly on Android 12+ (API 31+) if I set it to FLAG_IMMUTABLE
+			//pendingIntentFlags |= PendingIntent.FLAG_MUTABLE;
 		}
 
-		Intent receiverIntent = new Intent( BROADCAST_RECEIVER_FILTER );
-		return PendingIntent.getBroadcast( context, 0, receiverIntent, PendingIntent.FLAG_UPDATE_CURRENT ).getIntentSender();
+		return PendingIntent.getBroadcast( context, 0, receiverIntent, pendingIntentFlags ).getIntentSender();
 	}
 
 	@Override
 	public void onReceive( Context context, Intent intent )
 	{
-		if( broadcastReceiver != null )
-		{
-			context.getApplicationContext().unregisterReceiver( broadcastReceiver );
-			broadcastReceiver = null;
-		}
-		else
-			Log.e( "Unity", "ShareResultBroadcastReceiver was null!" );
-
 		if( NativeShare.shareResultReceiver != null )
 		{
 			ComponentName selectedShareTarget = intent.getParcelableExtra( Intent.EXTRA_CHOSEN_COMPONENT );

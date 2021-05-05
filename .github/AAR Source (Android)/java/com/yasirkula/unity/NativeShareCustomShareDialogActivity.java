@@ -5,7 +5,7 @@ import android.app.DialogFragment;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 
-// Sole purporse of this activity is to show a NativeShareCsutomShareDialog inside
+// Sole purpose of this activity is to show a NativeShareCustomShareDialog inside
 // We are not displaying this dialog inside Unity's own Activity for 2 reasons:
 // 1: When shown inside Unity'a activity, the dialog doesn't block Unity's main thread (game keeps playing in the background)
 // (although this also happens on iOS, this behaviour is inconsistent with the standard ACTION_SEND intent)
