@@ -30,7 +30,7 @@ For reference, the legacy documentation is available at: https://github.com/yasi
 
 There are two ways to set up the plugin on iOS:
 
-- **a. Automated Setup:** *(optional)* change the value of **PHOTO_LIBRARY_USAGE_DESCRIPTION** in *Plugins/NativeShare/Editor/NSPostProcessBuild.cs*
+- **a. Automated Setup:** *(optional)* change the value of **Photo Library Usage Description** at *Project Settings/yasirkula/Native Share*
 - **b. Manual Setup:** see: https://github.com/yasirkula/UnityNativeShare/wiki/Manual-Setup-for-iOS
 
 ## HOW TO

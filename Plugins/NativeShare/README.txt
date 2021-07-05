@@ -3,6 +3,7 @@
 Online documentation & example code available at: https://github.com/yasirkula/UnityNativeShare
 E-mail: yasirkula@gmail.com
 
+
 1. ABOUT
 This plugin helps you natively share files (images, videos, documents, etc.) and/or plain text on Android & iOS. A ContentProvider is used to share the media on Android.
 
@@ -17,10 +18,10 @@ For reference, the legacy documentation is available at: https://github.com/yasi
 There are two ways to set up the plugin on iOS:
 
 a. Automated Setup for iOS
-- change the value of PHOTO_LIBRARY_USAGE_DESCRIPTION in Plugins/NativeShare/Editor/NSPostProcessBuild.cs (optional)
+- (optional) change the value of 'Photo Library Usage Description' at 'Project Settings/yasirkula/Native Share'
 
 b. Manual Setup for iOS
-- set the value of ENABLED to false in NSPostProcessBuild.cs
+- set the value of 'Automated Setup' to false at 'Project Settings/yasirkula/Native Share'
 - build your project
 - enter a Photo Library Usage Description to Info.plist in Xcode (in case user decides to save the shared media to Photos)
 - also enter a Photo Library Additions Usage Description to Info.plist in Xcode, if exists
