@@ -2,10 +2,12 @@ package com.yasirkula.unity;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 /**
  * Created by yasirkula on 11.07.2020.
@@ -36,10 +38,18 @@ public class NativeShareFragment extends Fragment
 			final Intent shareIntent = NativeShare.CreateIntentFromBundle( getActivity(), getArguments() );
 			final String title = getArguments().getString( NativeShareFragment.TITLE_ID );
 
-			if( Build.VERSION.SDK_INT < 22 )
-				startActivityForResult( Intent.createChooser( shareIntent, title ), SHARE_RESULT_CODE );
-			else
-				startActivityForResult( Intent.createChooser( shareIntent, title, NativeShareBroadcastListener.Initialize( getActivity() ) ), SHARE_RESULT_CODE );
+			try
+			{
+				if( Build.VERSION.SDK_INT < 22 )
+					startActivityForResult( Intent.createChooser( shareIntent, title ), SHARE_RESULT_CODE );
+				else
+					startActivityForResult( Intent.createChooser( shareIntent, title, NativeShareBroadcastListener.Initialize( getActivity() ) ), SHARE_RESULT_CODE );
+			}
+			catch( ActivityNotFoundException e )
+			{
+				Toast.makeText( getActivity(), "No apps can perform this action.", Toast.LENGTH_LONG ).show();
+				onActivityResult( SHARE_RESULT_CODE, Activity.RESULT_CANCELED, null );
+			}
 		}
 	}
 

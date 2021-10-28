@@ -66,8 +66,10 @@ public class NativeShare
 				shouldUseCustomShareDialog = true; // At least some Huawei devices don't support callback for unknown reasons
 		}
 
-		if( !shouldUseCustomShareDialog && IsXiaomiOrMIUI() && IsUnityInLandscapeMode( (Activity) context ) )
-			shouldUseCustomShareDialog = true; // At least some Xiaomi devices can't display share dialog properly when in landscape mode (Issue #56)
+		// 1) MIUI devices have issues with Intent.createChooser on at least Android 11 (https://stackoverflow.com/questions/67785661/taking-and-picking-photos-on-poco-x3-with-android-11-does-not-work)
+		// 2) At least some Xiaomi devices can't display share dialog properly when in landscape mode (Issue #56)
+		if( !shouldUseCustomShareDialog && IsXiaomiOrMIUI() && ( Build.VERSION.SDK_INT == 30 || IsUnityInLandscapeMode( (Activity) context ) ) )
+			shouldUseCustomShareDialog = true;
 
 		if( shouldUseCustomShareDialog )
 		{
