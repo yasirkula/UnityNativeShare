@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -77,13 +78,18 @@ public class NativeShareCustomShareDialog extends DialogFragment
 	@Override
 	public Dialog onCreateDialog( Bundle savedInstanceState )
 	{
-		final Intent shareIntent = NativeShare.CreateIntentFromBundle( getActivity(), getArguments() );
+		final ArrayList<Uri> fileUris = new ArrayList<Uri>();
+		final Intent shareIntent = NativeShare.CreateIntentFromBundle( getActivity(), getArguments(), fileUris );
 		final String title = getArguments().getString( NativeShareFragment.TITLE_ID );
 		final ArrayList<String> targetPackages = getArguments().getStringArrayList( NativeShareFragment.TARGET_PACKAGE_ID );
 		final ArrayList<String> targetClasses = getArguments().getStringArrayList( NativeShareFragment.TARGET_CLASS_ID );
 
 		PackageManager packageManager = getActivity().getPackageManager();
 		List<ResolveInfo> shareTargets = packageManager.queryIntentActivities( shareIntent, PackageManager.MATCH_DEFAULT_ONLY );
+
+		if( fileUris.size() > 0 )
+			NativeShare.GrantURIPermissionsToShareIntentTargets( getActivity(), shareTargets, fileUris );
+
 		if( targetPackages.size() > 1 )
 		{
 			for( int i = shareTargets.size() - 1; i >= 0; i-- )

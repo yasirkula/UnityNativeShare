@@ -4,10 +4,16 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by yasirkula on 11.07.2020.
@@ -35,15 +41,22 @@ public class NativeShareFragment extends Fragment
 			getFragmentManager().beginTransaction().remove( this ).commit();
 		else
 		{
-			final Intent shareIntent = NativeShare.CreateIntentFromBundle( getActivity(), getArguments() );
+			final ArrayList<Uri> fileUris = new ArrayList<Uri>();
+			final Intent shareIntent = NativeShare.CreateIntentFromBundle( getActivity(), getArguments(), fileUris );
 			final String title = getArguments().getString( NativeShareFragment.TITLE_ID );
 
 			try
 			{
+				Intent chooserIntent;
 				if( Build.VERSION.SDK_INT < 22 )
-					startActivityForResult( Intent.createChooser( shareIntent, title ), SHARE_RESULT_CODE );
+					chooserIntent = Intent.createChooser( shareIntent, title );
 				else
-					startActivityForResult( Intent.createChooser( shareIntent, title, NativeShareBroadcastListener.Initialize( getActivity() ) ), SHARE_RESULT_CODE );
+					chooserIntent = Intent.createChooser( shareIntent, title, NativeShareBroadcastListener.Initialize( getActivity() ) );
+
+				if( fileUris.size() > 0 )
+					NativeShare.GrantURIPermissionsToShareIntentTargets( getActivity(), getActivity().getPackageManager().queryIntentActivities( chooserIntent, PackageManager.MATCH_DEFAULT_ONLY ), fileUris );
+
+				startActivityForResult( chooserIntent, SHARE_RESULT_CODE );
 			}
 			catch( ActivityNotFoundException e )
 			{

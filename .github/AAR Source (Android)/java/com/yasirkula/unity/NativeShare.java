@@ -8,6 +8,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
+import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
@@ -92,7 +93,7 @@ public class NativeShare
 		}
 	}
 
-	public static Intent CreateIntentFromBundle( Context context, Bundle bundle )
+	public static Intent CreateIntentFromBundle( Context context, Bundle bundle, ArrayList<Uri> fileUris )
 	{
 		final String subject = bundle.getString( NativeShareFragment.SUBJECT_ID );
 		final String text = bundle.getString( NativeShareFragment.TEXT_ID );
@@ -170,20 +171,21 @@ public class NativeShare
 				intent.setAction( Intent.ACTION_SEND );
 
 				Uri contentUri = NativeShareContentProvider.getUriForFile( context, NativeShare.authority, new File( files.get( 0 ) ) );
+				fileUris.add( contentUri );
+
 				intent.putExtra( Intent.EXTRA_STREAM, contentUri );
 			}
 			else
 			{
 				// Credit: https://stackoverflow.com/a/27514002/2373034
 				intent.setAction( Intent.ACTION_SEND_MULTIPLE );
-				ArrayList<Uri> uris = new ArrayList<Uri>( files.size() );
 				for( int i = 0; i < files.size(); i++ )
 				{
 					Uri contentUri = NativeShareContentProvider.getUriForFile( context, NativeShare.authority, new File( files.get( i ) ) );
-					uris.add( contentUri );
+					fileUris.add( contentUri );
 				}
 
-				intent.putParcelableArrayListExtra( Intent.EXTRA_STREAM, uris );
+				intent.putParcelableArrayListExtra( Intent.EXTRA_STREAM, fileUris );
 			}
 		}
 		else
@@ -207,6 +209,24 @@ public class NativeShare
 		}
 
 		return intent;
+	}
+
+	public static void GrantURIPermissionsToShareIntentTargets( Context context, List<ResolveInfo> shareTargets, ArrayList<Uri> fileUris )
+	{
+		// Avoid "java.lang.SecurityException: Permission Denial: reading com.yasirkula.unity.NativeShareContentProvider uri ... requires the provider be exported, or grantUriPermission()"
+		// Credit: https://stackoverflow.com/a/59439316/2373034
+		try
+		{
+			for( int i = shareTargets.size() - 1; i >= 0; i-- )
+			{
+				for( int j = fileUris.size() - 1; j >= 0; j-- )
+					context.grantUriPermission( shareTargets.get( i ).activityInfo.packageName, fileUris.get( j ), Intent.FLAG_GRANT_READ_URI_PERMISSION );
+			}
+		}
+		catch( Exception e )
+		{
+			Log.e( "Unity", "NativeShare couldn't call grantUriPermission:", e );
+		}
 	}
 
 	private static String GetAuthority( Context context )
