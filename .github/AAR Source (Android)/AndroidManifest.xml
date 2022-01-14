@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.yasirkula.unity">
 	<application>
-		<activity android:name=".NativeShareCustomShareDialogActivity" android:theme="@style/Theme.NativeShareTransparent" />
+		<activity android:name=".NativeShareCustomShareDialogActivity" android:theme="@style/Theme.NativeShareTransparent" android:exported="false" />
 		<receiver android:name=".NativeShareBroadcastListener" android:exported="false" />
 		<provider
 		  android:name="com.yasirkula.unity.NativeShareContentProvider"
