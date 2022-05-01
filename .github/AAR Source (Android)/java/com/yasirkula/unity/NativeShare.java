@@ -37,7 +37,7 @@ public class NativeShare
 
 	private static int isXiaomiOrMIUI = 0; // 1: true, -1: false
 
-	public static void Share( final Context context, final NativeShareResultReceiver shareResultReceiver, final String[] targetPackages, final String[] targetClasses, final String[] files, final String[] mimes, final String subject, final String text, final String title )
+	public static void Share( final Context context, final NativeShareResultReceiver shareResultReceiver, final String[] targetPackages, final String[] targetClasses, final String[] files, final String[] mimes, final String[] emailRecipients, final String subject, final String text, final String title )
 	{
 		if( files.length > 0 && GetAuthority( context ) == null )
 		{
@@ -55,6 +55,7 @@ public class NativeShare
 		bundle.putString( NativeShareFragment.TITLE_ID, title );
 		bundle.putStringArrayList( NativeShareFragment.FILES_ID, ConvertArrayToArrayList( files ) );
 		bundle.putStringArrayList( NativeShareFragment.MIMES_ID, ConvertArrayToArrayList( mimes ) );
+		bundle.putStringArrayList( NativeShareFragment.EMAIL_RECIPIENTS_ID, ConvertArrayToArrayList( emailRecipients ) );
 		bundle.putStringArrayList( NativeShareFragment.TARGET_PACKAGE_ID, ConvertArrayToArrayList( targetPackages ) );
 		bundle.putStringArrayList( NativeShareFragment.TARGET_CLASS_ID, ConvertArrayToArrayList( targetClasses ) );
 
@@ -100,6 +101,7 @@ public class NativeShare
 		final String title = bundle.getString( NativeShareFragment.TITLE_ID );
 		final ArrayList<String> files = bundle.getStringArrayList( NativeShareFragment.FILES_ID );
 		final ArrayList<String> mimes = bundle.getStringArrayList( NativeShareFragment.MIMES_ID );
+		final ArrayList<String> emailRecipients = bundle.getStringArrayList( NativeShareFragment.EMAIL_RECIPIENTS_ID );
 		final ArrayList<String> targetPackages = bundle.getStringArrayList( NativeShareFragment.TARGET_PACKAGE_ID );
 		final ArrayList<String> targetClasses = bundle.getStringArrayList( NativeShareFragment.TARGET_CLASS_ID );
 
@@ -192,6 +194,13 @@ public class NativeShare
 		{
 			mime = "text/plain";
 			intent.setAction( Intent.ACTION_SEND );
+		}
+
+		if( emailRecipients.size() > 0 )
+		{
+			String[] emailRecipientsArray = new String[emailRecipients.size()];
+			emailRecipients.toArray( emailRecipientsArray );
+			intent.putExtra( Intent.EXTRA_EMAIL, emailRecipientsArray );
 		}
 
 		if( title.length() > 0 )

@@ -52,6 +52,10 @@ public class NativeShare
 	private string url = string.Empty;
 
 #if UNITY_EDITOR || UNITY_ANDROID
+	private readonly List<string> emailRecipients = new List<string>( 0 );
+#endif
+
+#if UNITY_EDITOR || UNITY_ANDROID
 	private readonly List<string> targetPackages = new List<string>( 0 );
 	private readonly List<string> targetClasses = new List<string>( 0 );
 #endif
@@ -162,6 +166,16 @@ public class NativeShare
 		return this;
 	}
 
+	public NativeShare AddEmailRecipient( string emailAddress )
+	{
+#if UNITY_EDITOR || UNITY_ANDROID
+		if( !string.IsNullOrEmpty( emailAddress ) && !emailRecipients.Contains( emailAddress ) )
+			emailRecipients.Add( emailAddress );
+#endif
+
+		return this;
+	}
+
 	public void Share()
 	{
 		if( files.Count == 0 && subject.Length == 0 && text.Length == 0 && url.Length == 0 )
@@ -176,7 +190,7 @@ public class NativeShare
 		if( callback != null )
 			callback( ShareResult.Shared, null );
 #elif UNITY_ANDROID
-		AJC.CallStatic( "Share", Context, new NSShareResultCallbackAndroid( callback ), targetPackages.ToArray(), targetClasses.ToArray(), files.ToArray(), mimes.ToArray(), subject, CombineURLWithText(), title );
+		AJC.CallStatic( "Share", Context, new NSShareResultCallbackAndroid( callback ), targetPackages.ToArray(), targetClasses.ToArray(), files.ToArray(), mimes.ToArray(), emailRecipients.ToArray(), subject, CombineURLWithText(), title );
 #elif UNITY_IOS
 		NSShareResultCallbackiOS.Initialize( callback );
 		if( files.Count == 0 )

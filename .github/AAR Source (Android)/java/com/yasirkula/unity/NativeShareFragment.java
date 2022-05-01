@@ -28,6 +28,7 @@ public class NativeShareFragment extends Fragment
 	public static final String TARGET_CLASS_ID = "NS_TARGET_CLASS";
 	public static final String FILES_ID = "NS_FILES";
 	public static final String MIMES_ID = "NS_MIMES";
+	public static final String EMAIL_RECIPIENTS_ID = "NS_EMAIL_RECIPIENTS";
 	public static final String SUBJECT_ID = "NS_SUBJECT";
 	public static final String TEXT_ID = "NS_TEXT";
 	public static final String TITLE_ID = "NS_TITLE";
@@ -44,6 +45,8 @@ public class NativeShareFragment extends Fragment
 			final ArrayList<Uri> fileUris = new ArrayList<Uri>();
 			final Intent shareIntent = NativeShare.CreateIntentFromBundle( getActivity(), getArguments(), fileUris );
 			final String title = getArguments().getString( NativeShareFragment.TITLE_ID );
+
+			shareIntent.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK );
 
 			try
 			{

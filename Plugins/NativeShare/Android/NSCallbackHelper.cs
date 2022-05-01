@@ -1,4 +1,5 @@
 ﻿#if UNITY_EDITOR || UNITY_ANDROID
+using System.Collections;
 using UnityEngine;
 
 namespace NativeShareNamespace
@@ -35,11 +36,12 @@ namespace NativeShareNamespace
 			}
 		}
 
-		private void OnApplicationFocus( bool focus )
+		private IEnumerator OnApplicationFocus( bool focus )
 		{
 			if( focus )
 			{
 				// Share sheet is closed and now Unity activity is running again. Send Unknown result if OnShareCompleted wasn't called
+				yield return null;
 				resultReceived = true;
 			}
 		}
