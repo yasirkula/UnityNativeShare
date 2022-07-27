@@ -75,6 +75,15 @@ It is just not possible to share an image/file with text/subject on some apps (e
 
 NativeShare adds `<queries>` element to AndroidManifest.xml due to the new [package visibility change](https://developer.android.com/training/package-visibility). The build error can be fixed by following these steps: https://developers.google.com/ar/develop/unity/android-11-build (in my tests, changing "*Gradle installed with Unity*" wasn't necessary). In the worst case, if you are OK with NativeShare not working on some of the affected devices, then you can open *NativeShare.aar* with WinRAR or 7-Zip and then remove the `<queries>...</queries>` element from *AndroidManifest.xml*.
 
+- **When using Unity as a Library on Android, the app crashes when sharing a file**
+
+If you're running the Unity activity in a separate process, then modify *AndroidManifest.xml* inside *NativeShare.aar* so that both `NativeShareCustomShareDialogActivity` and `NativeShareBroadcastListener` also run on the same process, e.g:
+
+```xml
+<activity android:name=".NativeShareCustomShareDialogActivity" ... android:process=":YourProcess" />
+<receiver android:name=".NativeShareBroadcastListener" ... android:process=":YourProcess" />
+```
+
 - **Can't share, it says "java.lang.ClassNotFoundException: com.yasirkula.unity.NativeShare" in Logcat**
 
 If you are sure that your plugin is up-to-date, then enable **Custom Proguard File** option from *Player Settings* and add the following line to that file: `-keep class com.yasirkula.unity.* { *; }`
