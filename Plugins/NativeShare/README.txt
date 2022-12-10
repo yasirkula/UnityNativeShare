@@ -1,4 +1,4 @@
-= Native Share for Android & iOS (v1.4.8) =
+= Native Share for Android & iOS (v1.4.9) =
 
 Online documentation & example code available at: https://github.com/yasirkula/UnityNativeShare
 E-mail: yasirkula@gmail.com

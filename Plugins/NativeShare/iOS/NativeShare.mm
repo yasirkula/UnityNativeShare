@@ -85,10 +85,7 @@ extern "C" void _NativeShare_Share( const char* files[], int filesCount, const c
 			[items addObject:[NSURL fileURLWithPath:filePath]];
 	}
 	
-	UIActivityViewController *activity = [[UIActivityViewController alloc] initWithActivityItems:items applicationActivities:nil];
-	if( strlen( subject ) > 0 )
-		[activity setValue:[NSString stringWithUTF8String:subject] forKey:@"subject"];
-	else if( [items count] == 0 )
+	if( strlen( subject ) == 0 && [items count] == 0 )
 	{
 		NSLog( @"Share canceled because there is nothing to share..." );
 		UnitySendMessage( "NSShareResultCallbackiOS", "OnShareCompleted", "2" );
@@ -96,35 +93,51 @@ extern "C" void _NativeShare_Share( const char* files[], int filesCount, const c
 		return;
 	}
 	
-	if( CHECK_IOS_VERSION( @"8.0" ) )
+	UIActivityViewController *activity = [[UIActivityViewController alloc] initWithActivityItems:items applicationActivities:nil];
+	if( strlen( subject ) > 0 )
+		[activity setValue:[NSString stringWithUTF8String:subject] forKey:@"subject"];
+	
+	void (^shareResultCallback)(UIActivityType activityType, BOOL completed, UIActivityViewController *activityReference) = ^void( UIActivityType activityType, BOOL completed, UIActivityViewController *activityReference )
 	{
-		activity.completionWithItemsHandler = ^( UIActivityType activityType, BOOL completed, NSArray *returnedItems, NSError *activityError )
+		NSLog( @"Shared to %@ with result: %d", activityType, completed );
+		
+		if( activityReference )
 		{
-			NSLog( @"Shared to %@ with result: %d", activityType, completed );
-			
-			if( activityError != nil )
-				NSLog( @"Share error: %@", activityError );
-			
 			const char *resultMessage = [[NSString stringWithFormat:@"%d%@", completed ? 1 : 2, activityType] UTF8String];
 			char *result = (char*) malloc( strlen( resultMessage ) + 1 );
 			strcpy( result, resultMessage );
 			
 			UnitySendMessage( "NSShareResultCallbackiOS", "OnShareCompleted", result );
+			
+			// On iPhones, the share sheet isn't dismissed automatically when share operation is canceled, do that manually here
+			if( !completed && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
+				[activityReference dismissViewControllerAnimated:NO completion:nil];
+		}
+		else
+			NSLog( @"Share result callback is invoked multiple times!" );
+	};
+	
+	if( CHECK_IOS_VERSION( @"8.0" ) )
+	{
+		__block UIActivityViewController *activityReference = activity; // About __block usage: https://gist.github.com/HawkingOuYang/b2c9783c75f929b5580c
+		activity.completionWithItemsHandler = ^( UIActivityType activityType, BOOL completed, NSArray *returnedItems, NSError *activityError )
+		{
+			if( activityError != nil )
+				NSLog( @"Share error: %@", activityError );
+			
+			shareResultCallback( activityType, completed, activityReference );
+			activityReference = nil;
 		};
 	}
 	else if( CHECK_IOS_VERSION( @"6.0" ) )
 	{
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+		__block UIActivityViewController *activityReference = activity;
 		activity.completionHandler = ^( UIActivityType activityType, BOOL completed )
 		{
-			NSLog( @"Shared to %@ with result: %d", activityType, completed );
-			
-			const char *resultMessage = [[NSString stringWithFormat:@"%d%@", completed ? 1 : 2, activityType] UTF8String];
-			char *result = (char*) malloc( strlen( resultMessage ) + 1 );
-			strcpy( result, resultMessage );
-			
-			UnitySendMessage( "NSShareResultCallbackiOS", "OnShareCompleted", result );
+			shareResultCallback( activityType, completed, activityReference );
+			activityReference = nil;
 		};
 #pragma clang diagnostic pop
 	}
