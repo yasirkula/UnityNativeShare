@@ -39,6 +39,7 @@ There are two ways to set up the plugin on iOS:
 
 Simply create a new **NativeShare** object and customize it by chaining the following functions as you like (see example code):
 
+- `Clear()`: clears the previously set share content (if any). Only useful if the same NativeShare instance will be reused for memory efficiency
 - `SetSubject( string subject )`: sets the subject (primarily used in e-mail applications)
 - `SetText( string text )`: sets the shared text. Note that the Facebook app will omit text, if exists (see [this topic](https://stackoverflow.com/a/35102802/2373034))
 - `SetUrl( string url )`: sets the shared url. On supported iOS apps, this url is used to generate a preview of the target webpage. Other iOS apps may append the url to the text or omit it. While sharing a file on iOS or while sharing anything on Android, the url is appended to the text (unless the text already contains the url)

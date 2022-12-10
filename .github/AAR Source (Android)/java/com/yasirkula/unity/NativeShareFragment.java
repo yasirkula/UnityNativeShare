@@ -39,7 +39,7 @@ public class NativeShareFragment extends Fragment
 		super.onCreate( savedInstanceState );
 
 		if( NativeShare.shareResultReceiver == null )
-			getFragmentManager().beginTransaction().remove( this ).commit();
+			onActivityResult( SHARE_RESULT_CODE, Activity.RESULT_CANCELED, null );
 		else
 		{
 			final ArrayList<Uri> fileUris = new ArrayList<Uri>();

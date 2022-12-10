@@ -53,9 +53,7 @@ public class NativeShare
 
 #if UNITY_EDITOR || UNITY_ANDROID
 	private readonly List<string> emailRecipients = new List<string>( 0 );
-#endif
 
-#if UNITY_EDITOR || UNITY_ANDROID
 	private readonly List<string> targetPackages = new List<string>( 0 );
 	private readonly List<string> targetClasses = new List<string>( 0 );
 #endif
@@ -64,6 +62,23 @@ public class NativeShare
 	private readonly List<string> mimes = new List<string>( 0 );
 
 	private ShareResultCallback callback;
+
+	public NativeShare Clear()
+	{
+		subject = text = title = url = string.Empty;
+
+#if UNITY_EDITOR || UNITY_ANDROID
+		emailRecipients.Clear();
+		targetPackages.Clear();
+		targetClasses.Clear();
+#endif
+		files.Clear();
+		mimes.Clear();
+
+		callback = null;
+
+		return this;
+	}
 
 	public NativeShare SetSubject( string subject )
 	{

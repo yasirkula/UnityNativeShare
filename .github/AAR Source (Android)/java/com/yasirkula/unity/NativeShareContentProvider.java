@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.provider.OpenableColumns;
 import android.text.TextUtils;
+import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import org.xmlpull.v1.XmlPullParserException;
@@ -254,12 +255,19 @@ public class NativeShareContentProvider extends ContentProvider
 		final SimplePathStrategy strat = new SimplePathStrategy(authority);
 		final ProviderInfo info = context.getPackageManager()
 				.resolveContentProvider(authority, PackageManager.GET_META_DATA);
-		final XmlResourceParser in = info.loadXmlMetaData(
-				context.getPackageManager(), META_DATA_FILE_PROVIDER_PATHS);
-		//if (in == null) {
-		//    throw new IllegalArgumentException(
-		//            "Missing " + META_DATA_FILE_PROVIDER_PATHS + " meta-data");
-		//}
+		if (info == null)
+		{
+			Log.w("Unity", "NativeShareContentProvider.resolveContentProvider is null!");
+		}
+		else
+		{
+			final XmlResourceParser in = info.loadXmlMetaData(
+					context.getPackageManager(), META_DATA_FILE_PROVIDER_PATHS );
+			//if (in == null) {
+			//    throw new IllegalArgumentException(
+			//            "Missing " + META_DATA_FILE_PROVIDER_PATHS + " meta-data");
+			//}
+		}
 
 		File target = null;
 		target = buildPath(DEVICE_ROOT, ".");

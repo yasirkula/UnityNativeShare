@@ -1,4 +1,4 @@
-= Native Share for Android & iOS =
+= Native Share for Android & iOS (v1.4.8) =
 
 Online documentation & example code available at: https://github.com/yasirkula/UnityNativeShare
 E-mail: yasirkula@gmail.com
@@ -44,6 +44,7 @@ If you are sure that your plugin is up-to-date, then enable "Custom Proguard Fil
 4. SCRIPTING API
 Simply create a new NativeShare object and customize it by chaining the following functions as you like:
 
+- Clear(): clears the previously set share content (if any). Only useful if the same NativeShare instance will be reused for memory efficiency
 - SetSubject( string subject ): sets the subject (primarily used in e-mail applications)
 - SetText( string text ): sets the shared text. Note that the Facebook app will omit text, if exists
 - SetUrl( string url ): sets the shared url. On supported iOS apps, this url is used to generate a preview of the target webpage. Other iOS apps may append the url to the text or omit it. While sharing a file on iOS or while sharing anything on Android, the url is appended to the text (unless the text already contains the url)
