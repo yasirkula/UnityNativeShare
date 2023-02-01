@@ -89,6 +89,10 @@ If you're running the Unity activity in a separate process, then modify *Android
 
 If you are sure that your plugin is up-to-date, then enable **Custom Proguard File** option from *Player Settings* and add the following line to that file: `-keep class com.yasirkula.unity.* { *; }`
 
+- **Can't share when using Beebyte Obfuscator, it says "Exception: No such proxy method: xyz.HasManagedCallback()" in Logcat**
+
+Add `NativeShareNamespace.NSShareResultCallbackAndroid` to the `Skip Classes` section of your obfuscator settings asset.
+
 ## EXAMPLE CODE
 
 The following code captures the screenshot of the game whenever you tap the screen, saves it in a temporary path and then shares it:
