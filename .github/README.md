@@ -89,9 +89,9 @@ If you're running the Unity activity in a separate process, then modify *Android
 
 If you are sure that your plugin is up-to-date, then enable **Custom Proguard File** option from *Player Settings* and add the following line to that file: `-keep class com.yasirkula.unity.* { *; }`
 
-- **Can't share on Production builds, it says "Exception: No such proxy method: xyz.HasManagedCallback()"**
+- **Can't share when using Beebyte Obfuscator, it says "Exception: No such proxy method: xyz.HasManagedCallback()" in Logcat**
 
-Add `NativeShareNamespace.NSShareResultCallbackAndroid` to the `Skip Classes` section of your Beebyte `Obfuscator.asset`
+Add `NativeShareNamespace.NSShareResultCallbackAndroid` to the `Skip Classes` section of your obfuscator settings asset.
 
 ## EXAMPLE CODE
 
