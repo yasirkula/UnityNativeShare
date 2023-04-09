@@ -1,5 +1,7 @@
 # Unity Native Share Plugin
 
+## NOTICE: This asset is no longer maintained! Consider using alternative sharing solutions that are actively being maintained. While using this package, expect issues when sharing a file/image/video with a text (see FAQ).
+
 **Available on Asset Store:** https://assetstore.unity.com/packages/tools/integration/native-share-for-android-ios-112731
 
 **Forum Thread:** https://forum.unity.com/threads/native-share-for-android-ios-open-source.519865/
