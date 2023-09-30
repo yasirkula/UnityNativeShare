@@ -122,7 +122,7 @@ public class NativeShareCustomShareDialog extends DialogFragment
 						@Override
 						public void onClick( DialogInterface dialog, int which )
 						{
-							dismiss();
+							dismissAllowingStateLoss();
 						}
 					} )
 					.setMessage( "No apps can perform this action." ).create();
@@ -131,7 +131,7 @@ public class NativeShareCustomShareDialog extends DialogFragment
 		if( shareTargets.size() == 1 )
 		{
 			StartTargetActivity( shareIntent, shareTargets.get( 0 ).activityInfo );
-			dismiss();
+			dismissAllowingStateLoss();
 		}
 		else
 			Collections.sort( shareTargets, new ResolveInfo.DisplayNameComparator( packageManager ) );
@@ -146,7 +146,7 @@ public class NativeShareCustomShareDialog extends DialogFragment
 			public void onItemClick( AdapterView<?> parent, View view, int position, long id )
 			{
 				StartTargetActivity( shareIntent, shareDialogAdapter.getItem( position ).activityInfo );
-				dismiss();
+				dismissAllowingStateLoss();
 			}
 		} );
 
@@ -157,7 +157,7 @@ public class NativeShareCustomShareDialog extends DialogFragment
 					@Override
 					public void onClick( DialogInterface dialog, int which )
 					{
-						dismiss();
+						dismissAllowingStateLoss();
 					}
 				} )
 				.setView( gridViewHolder ).create();
@@ -167,7 +167,7 @@ public class NativeShareCustomShareDialog extends DialogFragment
 	public void onPause()
 	{
 		super.onPause();
-		dismiss();
+		dismissAllowingStateLoss();
 	}
 
 	@Override
