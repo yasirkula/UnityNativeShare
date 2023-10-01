@@ -76,7 +76,7 @@ It is just not possible to share an image/file with text/subject on some apps (e
 
 - **I can't build the project to Android, it says "Android resource linking failed: unexpected element &lt;queries&gt; found in &lt;manifest&gt;" in the error message**
 
-NativeShare adds `<queries>` element to AndroidManifest.xml due to the new [package visibility change](https://developer.android.com/training/package-visibility). The build error can be fixed by following these steps: https://developers.google.com/ar/develop/unity-arf/android-11-build (in my tests, changing "*Gradle installed with Unity*" wasn't necessary). In the worst case, if you are OK with NativeShare not working on some of the affected devices, then you can open *NativeShare.aar* with WinRAR or 7-Zip and then remove the `<queries>...</queries>` element from *AndroidManifest.xml*.
+NativeShare adds `<queries>` element to AndroidManifest.xml due to the new [package visibility change](https://developer.android.com/training/package-visibility). The build error can be fixed by following these steps: [Android 11](https://developers.google.com/ar/develop/unity-arf/android-11-build), [Android 12](https://developers.google.com/ar/develop/unity-arf/android-12-build). In the worst case, if you are OK with NativeShare not working on some of the affected devices, then you can open *NativeShare.aar* with WinRAR or 7-Zip and then remove the `<queries>...</queries>` element from *AndroidManifest.xml*.
 
 - **When using Unity as a Library on Android, the app crashes when sharing a file**
 
