@@ -93,8 +93,11 @@ namespace NativeShareNamespace
 				plist.ReadFromString( File.ReadAllText( plistPath ) );
 
 				PlistElementDict rootDict = plist.root;
-				rootDict.SetString( "NSPhotoLibraryUsageDescription", Settings.Instance.PhotoLibraryUsageDescription );
-				rootDict.SetString( "NSPhotoLibraryAddUsageDescription", Settings.Instance.PhotoLibraryUsageDescription );
+				if( !string.IsNullOrEmpty( Settings.Instance.PhotoLibraryUsageDescription ) )
+				{
+					rootDict.SetString( "NSPhotoLibraryUsageDescription", Settings.Instance.PhotoLibraryUsageDescription );
+					rootDict.SetString( "NSPhotoLibraryAddUsageDescription", Settings.Instance.PhotoLibraryUsageDescription );
+				}
 
 				File.WriteAllText( plistPath, plist.WriteToString() );
 			}
