@@ -100,6 +100,6 @@ public class NativeShareFragment extends Fragment
 		else
 			Log.e( "Unity", "NativeShareResultReceiver was null!" );
 
-		getFragmentManager().beginTransaction().remove( this ).commit();
+		getFragmentManager().beginTransaction().remove( this ).commitAllowingStateLoss();
 	}
 }

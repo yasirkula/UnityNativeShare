@@ -90,7 +90,7 @@ public class NativeShare
 			final Fragment request = new NativeShareFragment();
 			request.setArguments( bundle );
 
-			( (Activity) context ).getFragmentManager().beginTransaction().add( 0, request ).commit();
+			( (Activity) context ).getFragmentManager().beginTransaction().add( 0, request ).commitAllowingStateLoss();
 		}
 	}
 

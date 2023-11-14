@@ -35,7 +35,7 @@ public class NativeShareCustomShareDialogActivity extends Activity
 
 			final DialogFragment request = new NativeShareCustomShareDialog();
 			request.setArguments( getIntent().getExtras() );
-			getFragmentManager().beginTransaction().add( 0, request ).commit();
+			getFragmentManager().beginTransaction().add( 0, request ).commitAllowingStateLoss();
 			//request.show( getFragmentManager(), "customsharedialog" );
 		}
 		else
