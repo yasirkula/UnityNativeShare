@@ -21,6 +21,7 @@ namespace NativeShareNamespace
 			instance.callback = callback;
 		}
 
+		[UnityEngine.Scripting.Preserve]
 		public void OnShareCompleted( string message )
 		{
 			NativeShare.ShareResultCallback _callback = callback;
