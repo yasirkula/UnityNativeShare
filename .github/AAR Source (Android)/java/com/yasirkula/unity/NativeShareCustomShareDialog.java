@@ -78,6 +78,20 @@ public class NativeShareCustomShareDialog extends DialogFragment
 	@Override
 	public Dialog onCreateDialog( Bundle savedInstanceState )
 	{
+		if( getArguments() == null ) // It was null in a Google Play crash report, don't ask me how
+		{
+			return new AlertDialog.Builder( getActivity() )
+					.setPositiveButton( android.R.string.ok, new DialogInterface.OnClickListener()
+					{
+						@Override
+						public void onClick( DialogInterface dialog, int which )
+						{
+							dismissAllowingStateLoss();
+						}
+					} )
+					.setMessage( "Unknown error occurred, please try again." ).create();
+		}
+
 		final ArrayList<Uri> fileUris = new ArrayList<Uri>();
 		final Intent shareIntent = NativeShare.CreateIntentFromBundle( getActivity(), getArguments(), fileUris );
 		final String title = getArguments().getString( NativeShareFragment.TITLE_ID );
@@ -180,7 +194,8 @@ public class NativeShareCustomShareDialog extends DialogFragment
 			sentShareResult = true;
 
 			// It is safe to send NotShared result here since for a successful share, NotShared won't override Shared
-			NativeShare.shareResultReceiver.OnShareCompleted( 2, "" ); // 2: NotShared
+			if( NativeShare.shareResultReceiver != null )
+				NativeShare.shareResultReceiver.OnShareCompleted( 2, "" ); // 2: NotShared
 		}
 	}
 
@@ -195,7 +210,8 @@ public class NativeShareCustomShareDialog extends DialogFragment
 			sentShareResult = true;
 
 			// It is safe to send NotShared result here since for a successful share, NotShared won't override Shared
-			NativeShare.shareResultReceiver.OnShareCompleted( 2, "" ); // 2: NotShared
+			if( NativeShare.shareResultReceiver != null ) // It was null in a Google Play crash report, don't ask me how
+				NativeShare.shareResultReceiver.OnShareCompleted( 2, "" ); // 2: NotShared
 		}
 
 		Activity ownerActivity = getActivity();
@@ -209,7 +225,9 @@ public class NativeShareCustomShareDialog extends DialogFragment
 		String selectedShareTargetStr = shareTarget.flattenToString();
 		Log.d( "Unity", "Shared on app: " + selectedShareTargetStr );
 
-		NativeShare.shareResultReceiver.OnShareCompleted( 1, selectedShareTargetStr ); // 1: Shared
+		if( NativeShare.shareResultReceiver != null )
+			NativeShare.shareResultReceiver.OnShareCompleted( 1, selectedShareTargetStr ); // 1: Shared
+
 		sentShareResult = true;
 
 		shareIntent.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK );
