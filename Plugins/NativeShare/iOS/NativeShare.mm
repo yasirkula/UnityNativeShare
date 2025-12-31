@@ -1,12 +1,7 @@
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
-#ifdef UNITY_4_0 || UNITY_5_0
-#import "iPhone_View.h"
-#else
-extern UIViewController* UnityGetGLViewController();
-#endif
 
-#define CHECK_IOS_VERSION( version )  ([[[UIDevice currentDevice] systemVersion] compare:version options:NSNumericSearch] != NSOrderedAscending)
+extern UIViewController* UnityGetGLViewController();
 
 // Credit: https://github.com/ChrisMaire/unity-native-sharing
 
@@ -38,9 +33,9 @@ extern "C" void _NativeShare_Share( const char* files[], int filesCount, const c
 {
 	NSMutableArray *items = [NSMutableArray new];
 	
-	// When there is a subject on iOS 7 or later, text is provided together with subject via a UNativeShareEmailItemProvider
+	// When there is a subject, text is provided together with subject via a UNativeShareEmailItemProvider
 	// Credit: https://stackoverflow.com/a/29916845/2373034
-	if( strlen( subject ) > 0 && CHECK_IOS_VERSION( @"7.0" ) )
+	if( strlen( subject ) > 0 )
 	{
 		UNativeShareEmailItemProvider *emailItem = [UNativeShareEmailItemProvider new];
 		emailItem.subject = [NSString stringWithUTF8String:subject];
@@ -59,14 +54,9 @@ extern "C" void _NativeShare_Share( const char* files[], int filesCount, const c
 		if( url == nil )
 		{
 			// Try escaping the URL
-			if( CHECK_IOS_VERSION( @"9.0" ) )
-			{
-				url = [NSURL URLWithString:[urlRaw stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]]];
-				if( url == nil )
-					url = [NSURL URLWithString:[urlRaw stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
-			}
-			else
-				url = [NSURL URLWithString:[urlRaw stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+			url = [NSURL URLWithString:[urlRaw stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]]];
+			if( url == nil )
+				url = [NSURL URLWithString:[urlRaw stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
 		}
 		
 		if( url != nil )
@@ -117,32 +107,15 @@ extern "C" void _NativeShare_Share( const char* files[], int filesCount, const c
 			NSLog( @"Share result callback is invoked multiple times!" );
 	};
 	
-	if( CHECK_IOS_VERSION( @"8.0" ) )
+	__block UIActivityViewController *activityReference = activity; // About __block usage: https://gist.github.com/HawkingOuYang/b2c9783c75f929b5580c
+	activity.completionWithItemsHandler = ^( UIActivityType activityType, BOOL completed, NSArray *returnedItems, NSError *activityError )
 	{
-		__block UIActivityViewController *activityReference = activity; // About __block usage: https://gist.github.com/HawkingOuYang/b2c9783c75f929b5580c
-		activity.completionWithItemsHandler = ^( UIActivityType activityType, BOOL completed, NSArray *returnedItems, NSError *activityError )
-		{
-			if( activityError != nil )
-				NSLog( @"Share error: %@", activityError );
-			
-			shareResultCallback( activityType, completed, activityReference );
-			activityReference = nil;
-		};
-	}
-	else if( CHECK_IOS_VERSION( @"6.0" ) )
-	{
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-		__block UIActivityViewController *activityReference = activity;
-		activity.completionHandler = ^( UIActivityType activityType, BOOL completed )
-		{
-			shareResultCallback( activityType, completed, activityReference );
-			activityReference = nil;
-		};
-#pragma clang diagnostic pop
-	}
-	else
-		UnitySendMessage( "NSShareResultCallbackiOS", "OnShareCompleted", "" );
+		if( activityError != nil )
+			NSLog( @"Share error: %@", activityError );
+		
+		shareResultCallback( activityType, completed, activityReference );
+		activityReference = nil;
+	};
 	
 	UIViewController *rootViewController = UnityGetGLViewController();
 	if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone ) // iPhone

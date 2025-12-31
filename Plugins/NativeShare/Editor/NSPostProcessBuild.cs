@@ -46,7 +46,6 @@ namespace NativeShareNamespace
 			File.WriteAllText( SAVE_PATH, JsonUtility.ToJson( this, true ) );
 		}
 
-#if UNITY_2018_3_OR_NEWER
 		[SettingsProvider]
 		public static SettingsProvider CreatePreferencesGUI()
 		{
@@ -56,11 +55,7 @@ namespace NativeShareNamespace
 				keywords = new System.Collections.Generic.HashSet<string>() { "Native", "Share", "Android", "iOS" }
 			};
 		}
-#endif
 
-#if !UNITY_2018_3_OR_NEWER
-		[PreferenceItem( "Native Share" )]
-#endif
 		public static void PreferencesGUI()
 		{
 			EditorGUI.BeginChangeCheck();
