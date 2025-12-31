@@ -101,6 +101,13 @@ public class NativeShareCustomShareDialog extends DialogFragment
 		PackageManager packageManager = getActivity().getPackageManager();
 		List<ResolveInfo> shareTargets = packageManager.queryIntentActivities( shareIntent, PackageManager.MATCH_DEFAULT_ONLY );
 
+		// Attempting to call startActivity on an unexported Activity results in java.lang.SecurityException (reported in Discord)
+		for( int i = shareTargets.size() - 1; i >= 0; i-- )
+		{
+			if( !shareTargets.get( i ).activityInfo.exported )
+				shareTargets.remove( i );
+		}
+
 		if( fileUris.size() > 0 )
 			NativeShare.GrantURIPermissionsToShareIntentTargets( getActivity(), shareTargets, fileUris );
 
@@ -233,6 +240,18 @@ public class NativeShareCustomShareDialog extends DialogFragment
 		shareIntent.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK );
 		shareIntent.setComponent( shareTarget );
 
-		startActivity( shareIntent );
+		try
+		{
+			startActivity( shareIntent );
+		}
+		catch( Exception e )
+		{
+			Log.e( "Unity", "Exception:", e );
+
+			if( NativeShare.shareResultReceiver != null )
+				NativeShare.shareResultReceiver.OnShareCompleted( 2, "" ); // 2: NotShared
+		}
+
+		sentShareResult = true;
 	}
 }
