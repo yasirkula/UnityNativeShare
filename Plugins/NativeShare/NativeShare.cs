@@ -231,9 +231,23 @@ public class NativeShare
 		if( androidClassName == null )
 			androidClassName = string.Empty;
 
-		return AJC.CallStatic<bool>( "TargetExists", Context, androidPackageName, androidClassName );
+		AndroidJavaClass up = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+        	AndroidJavaObject ca = up.GetStatic<AndroidJavaObject>("currentActivity");
+        	AndroidJavaObject packageManager = ca.Call<AndroidJavaObject>("getPackageManager");
+		AndroidJavaObject launchIntent = null;
+		try
+        	{
+            		launchIntent = packageManager.Call<AndroidJavaObject>("getLaunchIntentForPackage", androidPackageName);
+        	}
+        	catch (System.Exception ex)
+        	{
+            		Debug.Log("exception" + ex.Message);
+        	}
+        	if (launchIntent == null)
+            		return false;
+        	return true;
 #else
-		return true;
+		return false;
 #endif
 	}
 
