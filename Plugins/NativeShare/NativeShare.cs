@@ -297,10 +297,10 @@ public class NativeShare
 		{
 			return GetTextureBytesFromCopy( texture, isJpeg );
 		}
-
-#pragma warning disable 0162
-		return null;
-#pragma warning restore 0162
+        catch
+        {
+            return null;
+        }
 	}
 
 	private byte[] GetTextureBytesFromCopy( Texture2D texture, bool isJpeg )

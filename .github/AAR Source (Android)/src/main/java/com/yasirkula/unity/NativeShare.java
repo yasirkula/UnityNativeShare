@@ -64,7 +64,7 @@ public class NativeShare
 		{
 			if( Build.VERSION.SDK_INT < 22 )
 				shouldUseCustomShareDialog = true; // Old devices don't support callback unless custom dialog is used
-			else if( "huawei".equalsIgnoreCase( android.os.Build.MANUFACTURER ) )
+			else if( "huawei".equalsIgnoreCase( Build.MANUFACTURER ) )
 				shouldUseCustomShareDialog = true; // At least some Huawei devices don't support callback for unknown reasons
 		}
 
@@ -292,7 +292,7 @@ public class NativeShare
 		else if( isXiaomiOrMIUI < 0 )
 			return false;
 
-		if( "xiaomi".equalsIgnoreCase( android.os.Build.MANUFACTURER ) )
+		if( "xiaomi".equalsIgnoreCase( Build.MANUFACTURER ) )
 		{
 			isXiaomiOrMIUI = 1;
 			return true;
@@ -304,7 +304,7 @@ public class NativeShare
 		BufferedReader inputStream = null;
 		try
 		{
-			java.lang.Process process = Runtime.getRuntime().exec( "getprop ro.miui.ui.version.name" );
+			Process process = Runtime.getRuntime().exec( "getprop ro.miui.ui.version.name" );
 			inputStream = new BufferedReader( new InputStreamReader( process.getInputStream() ), 1024 );
 			line = inputStream.readLine();
 

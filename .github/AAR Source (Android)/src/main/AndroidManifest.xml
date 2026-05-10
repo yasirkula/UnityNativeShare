@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <activity android:name="com.yasirkula.unity.NativeShareCustomShareDialogActivity" android:theme="@style/Theme.NativeShareTransparent" android:exported="false" />
+        <receiver android:name="com.yasirkula.unity.NativeShareBroadcastListener" android:exported="false" />
+        <provider
+            android:name="com.yasirkula.unity.NativeShareContentProvider"
+            android:authorities="${applicationId}.NativeShareContentProvider"
+            android:exported="false"
+            android:grantUriPermissions="true" />
+    </application>
+
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.SEND" />
+            <data android:mimeType="*/*" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.SEND_MULTIPLE" />
+            <data android:mimeType="*/*" />
+        </intent>
+    </queries>
+</manifest>

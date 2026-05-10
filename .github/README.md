@@ -87,6 +87,10 @@ If you're running the Unity activity in a separate process, then modify *Android
 <receiver android:name=".NativeShareBroadcastListener" ... android:process=":YourProcess" />
 ```
 
+- **Android build fails with error message "D8: java.lang.NullPointerException Failed to transform NativeShare-.aar"**
+
+The plugin is using "Gradle version" `7.5.1` and "Android Gradle plug-in version" `7.4.2`. Make sure your Unity version is compatible: https://docs.unity3d.com/2021.3/Documentation/Manual/android-gradle-overview.html
+
 - **Can't share, it says "java.lang.ClassNotFoundException: com.yasirkula.unity.NativeShare" in Logcat**
 
 If you are sure that your plugin is up-to-date, then enable **Custom Proguard File** option from *Player Settings* and add the following line to that file: `-keep class com.yasirkula.unity.* { *; }`
